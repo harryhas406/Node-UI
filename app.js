@@ -356,7 +356,7 @@ app.post('/submit', (req, res) => {
                             <a href="/"><img class="logo" src="/logo.png" alt="logo"></a>
                             <h1 class="heading">Results for: ${inputString}</h1>
                             <div class="line"></div>
-                            <div class"table-container">${tableHtml}</div>
+                            <div class="table-container">${tableHtml}</div>
                         </div>
                         <script>
                             function toggleTheme() {
