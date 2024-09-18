@@ -1,0 +1,148 @@
+/* Define default colors for light mode */
+:root {
+    --background-color: #f5f5f5;
+    --text-color: #000;
+    --line-color: #1F618D;
+    --button-background-color: #1669D3;
+    --button-hover-color: #1F618D;
+    --table-header-bg: #4CAF50;
+    --table-row-bg: rgba(199, 245, 245, 0.25);
+    --table-row-hover-bg: #ddd;
+}
+/* Dark mode styles */
+body.dark-mode {
+    --background-color: #1e1e1e;
+    --text-color: #fff;
+    --line-color: #fff; /* Change line color in dark mode */
+    --button-background-color: #1669D3;
+    --button-hover-color: #1669D3;
+    --table-header-bg: #2C3E50;
+    --table-row-bg: rgba(255, 255, 255, 0.1);
+    --table-row-hover-bg: #333;
+}
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;  /* Prevent body scroll */
+    transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
+}
+.background {
+    position: absolute;
+    top: 12%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/static/background.png') no-repeat center center;
+    /*background-size: cover;*/
+    background-size: contain; /* Ensures the image fits within the viewport */
+    opacity: 0.08;  /* 10% opacity */
+    z-index: -1;
+}
+.container {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    overflow: auto;  /* Enable scrolling for the container */
+}
+.logo {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 60px; /* Adjust the logo size */
+}
+.heading {
+    color: #1669D3;
+    /*color: var(--line-color);*/
+    /*color: #1F618D;*/
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2); /* Subtle shadow for depth */
+    margin: 0;
+    z-index: 2;
+}
+.line {
+    position: absolute;
+    top: 160px;
+    width: 100%; /* 75% of the screen width */
+    height: 2px; /* Thickness of the line */
+    background-color: #1F618D; /* English Blue color */ 
+    /*background-color: var(--line-color);*/
+}
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 1px;
+    display: none;  /* Initially hidden */
+}
+.table-container {
+    margin-top: 180px; /* Adjusted margin to ensure table is positioned below the form */
+    padding: px;
+    max-height: 70vh; /* Set the maximum height of the scrollable area */
+    overflow-y: auto;  /* Enable vertical scroll */
+    width: 98%; /* Table takes 90% width */
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+}
+.theme-toggle {
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    /*background-color: #1669D3;*/
+    background-color: var(--button-background-color); 
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.theme-toggle:hover {
+    /*background-color: #1F618D;*/
+    background-color: var(--button-hover-color);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+th {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+td {
+    padding: 8px;
+    border: 1px solid white;
+    /*background-color: rgba(199, 245, 245, 0.25);*/
+    background-color: var(--table-row-bg);
+}
+tr:nth-child(even) {
+   /* background-color: #f2f2f2; */
+    background-color: var(--table-row-bg);
+}
+tr:hover {
+    /* background-color: #ddd; */
+    background-color: var(--table-row-hover-bg);
+}
+tr:nth-child(2) {
+    background-color: #ADD8E6; /* Light blue color */
+}

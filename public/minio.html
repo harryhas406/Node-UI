@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MinIO Browser</title>
+    <style>
+        /* Your existing styles */
+    </style>
+</head>
+<body>
+    <h1>MinIO File Browser</h1>
+
+    <div id="file-list">
+        <p>Loading...</p>
+    </div>
+
+    <script>
+        let currentPath = '';  // This will hold the current folder path
+    
+        // Function to load folder contents
+        function loadFolder(prefix = '') {
+            fetch(`/list/${encodeURIComponent(prefix)}`)
+                .then(response => response.json())
+                .then(data => {
+                    let table = '<table><tr><th>Name</th><th>Type</th></tr>';
+                    let parentFolder = prefix ? prefix.split('/').slice(0, -1).join('/') : ''; // To go back up
+    
+                    // Show a 'Back' link if we're not in the root folder
+                    if (prefix) {
+                        table += `<tr><td><a href="#" onclick="loadFolder('${encodeURIComponent(parentFolder)}')">../ (Go Back)</a></td><td>Folder</td></tr>`;
+                    }
+    
+                    // List each item in the folder
+                    data.forEach(item => {
+                        let isDir = item.name.endsWith('/');
+                        let displayName = item.name.replace(prefix, '').replace('/', '');  // Clean up name for display
+    
+                        if (isDir) {
+                            // Folder
+                            table += `<tr><td><a href="#" onclick="loadFolder('${encodeURIComponent(item.name)}')">${displayName}</a></td><td>Folder</td></tr>`;
+                        } else {
+                            // File
+                            let encodedPath = encodeURIComponent(item.name).replace(/%2F/g, '/');
+                            table += `<tr><td><a href="/fetch/${encodedPath}" target="_blank">${displayName}</a></td><td>File</td></tr>`;
+                        }
+                    });
+                    table += '</table>';
+                    document.getElementById('file-list').innerHTML = table;
+    
+                    currentPath = prefix;  // Update current path
+                })
+                .catch(error => {
+                    document.getElementById('file-list').innerHTML = `<p>Error loading folder: ${error.message}</p>`;
+                });
+        }
+    
+        // Load the root folder when the page loads
+        window.onload = () => {
+            loadFolder();
+        };
+    </script>
+    
+    
+</body>
+</html>
