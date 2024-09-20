@@ -393,7 +393,7 @@ const minioClient = new Minio.Client({
 });
 
 app.get('/list/:prefix?', (req, res) => {
-    const bucketName = 'leaks';  // Change to your bucket name
+    const bucketName = 'leaks-web';  // Change to your bucket name
     const prefix = req.params.prefix || '';  // Folder path, empty means root
 
     let objects = [];
@@ -416,7 +416,7 @@ app.get('/list/:prefix?', (req, res) => {
 
 // Route to fetch an object (image/data) from a folder
 app.get('/fetch/*', (req, res) => {
-    const bucketName = 'leaks';  // Change to your bucket name
+    const bucketName = 'leaks-web';  // Change to your bucket name
     const objectPath = req.params[0];  // Capture the full path after /fetch/
 
     minioClient.getObject(bucketName, objectPath, (err, dataStream) => {
@@ -464,8 +464,8 @@ async function listFiles(bucketName, prefix) {
 }
 
 app.get('/minio-files', async (req, res) => {
-    const bucketName = 'leaks';
-    const folderPrefix = 'gov/'; // The folder path where images are stored
+    const bucketName = 'leaks-web';
+    const folderPrefix = req.params.prefix; // The folder path where images are stored
 
     try {
         const files = await listFiles(bucketName, folderPrefix);
@@ -509,6 +509,76 @@ app.post('/api/search', async (req, res) => {
     }
 });
 
+//Fetching Data from Elasticsearch
+async function fetchElasticData() {
+    try {
+        const result = await client.search({
+            index: 'telegram_messages',
+            body: {
+                size: 0, // No need for documents, just the aggregation
+                aggs: {
+                    threat_categories: {
+                        terms: {
+                            field: 'categories.keyword', // Assuming 'category' is a keyword field
+                            size: 10
+                        }
+                    }
+                }
+            }
+        });
+
+        return result.aggregations.threat_categories.buckets;
+    } catch (err) {
+        console.error('Error fetching data from Elasticsearch', err);
+    }
+}
+
+//Once the data is fetched, you need to prepare it in the format suitable for the pie chart.
+app.get('/pie-chart-data', async (req, res) => {
+    try {
+        const buckets = await fetchElasticData(); // Assuming fetchElasticData is your function
+        res.json(buckets);
+    } catch (err) {
+        console.error('Error fetching pie chart data:', err);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+});
+
+// New route to fetch folder count data from MinIO
+app.get('/folder-count', async (req, res) => {
+    try {
+        const bucketName = 'leaks-web';  // Replace with your actual MinIO bucket name
+        const stream = minioClient.listObjectsV2(bucketName, '', true);  // List all objects
+        const files = [];
+
+        // Collect all files in the bucket
+        for await (const obj of stream) {
+            files.push(obj);
+        }
+
+        // Create an object to hold folder counts
+        const folderCounts = {};
+
+        files.forEach(file => {
+            // Extract the folder name from the file path
+            const folder = file.name.split('/')[0];  // Split by '/' and take the first part as folder name
+
+            if (folder) {
+                // Increment the count for the folder
+                folderCounts[folder] = (folderCounts[folder] || 0) + 1;
+            }
+        });
+
+        // Log the folder counts for debugging purposes
+        console.log('Folder Counts:', folderCounts);
+
+        // Respond with the folder count data
+        res.json(folderCounts);
+    } catch (error) {
+        console.error('Error fetching folder count:', error);
+        res.status(500).json({ error: 'Failed to fetch folder counts' });
+    }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;

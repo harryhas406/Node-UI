@@ -1,0 +1,302 @@
+app.get('/phishing')
+res.send
+        INSIDE BODY TAG 
+        // <div class="background"></div>
+        // <div class="container">
+        //     <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
+        //     <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
+        //     <h1 class="heading">Comprehensive Phishing Assessment</h1>
+        //     <div class="line"></div>
+        //     <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+        //         <input type="text" name="input_string" placeholder="Enter Domain here">
+        //         <input type="submit" value="Search">
+        //         <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+        //     </form>
+        // </div>
+
+
+
+// INDEX.HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDOT Assessment</title>
+    <style>
+        /* Define dark mode as the default */
+        body {
+            --background-color: #1e1e1e;
+            --text-color: #fff;
+            --line-color: #fff;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .background {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            width: 70%;
+            height: 70%;
+            background: url('/background.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.05;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            overflow: auto;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            left: 30px;
+        }
+
+        .logo {
+            width: 45px;  /* Adjust the logo size */
+            margin-right: 10px; /* Space between logo and heading */
+        }   
+
+        .heading {
+            color: #1669D3;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        .nav-links {
+            margin-top: 75px;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 18px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .line {
+            position: absolute;
+            top: 125px;
+            width: 100%;
+            height: 2px;
+            background-color: var(--line-color);
+        }
+
+        /* Center the search form */
+        .form-container {
+            position: absolute;
+            top: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .form-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 250px;
+            border-radius: 6px;
+            box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
+        }
+
+        .form-container input[type="submit"] {
+            padding: 8px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color);
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="submit"]:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 1px;
+            display: none;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-top: 60px;
+            padding: 0 20px;
+            height: 70vh;
+        }
+
+        .left-column {
+            width: 45%;
+            max-height: 100%;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .table-container {
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: var(--table-header-bg);
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-bg);
+        }
+        tr:hover {
+            background-color: var(--table-row-hover-bg);
+        }
+
+        .right-column {
+            width: 50%;
+            max-height: 100%;
+            overflow-y: auto;
+            padding-left: 10px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        a {
+            color: #689fc4; /* or any desired color for light mode */
+            text-decoration: none;
+        }
+
+        /* Link hover state */
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function validateForm(event) {
+            const input = document.querySelector('input[name="input_string"]');
+            const errorMessage = document.getElementById('error-message');
+            
+            if (input.value.trim() === "") {
+                event.preventDefault();
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        }
+
+        function loadFiles() {
+            fetch('/minio-files')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        let table = '<table><tr><th>File Name</th></tr>';
+                        data.forEach(file => {
+                            // Remove the file extension using regex
+                            const fileNameWithoutExtension = file.replace(/\.[^/.]+$/, "");
+                            
+                            // Build the table row with file name without extension
+                            table += `<tr><td><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${fileNameWithoutExtension}</a></td></tr>`;
+                        });
+                        table += '</table>';
+                        document.getElementById('file-list').innerHTML = table;
+                    } else {
+                        document.getElementById('file-list').innerHTML = '<p>No files found.</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('file-list').innerHTML = `<p>Error loading files: ${error.message}</p>`;
+                });
+        }
+
+        window.onload = function() {
+            loadFiles();
+        };
+
+    </script>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
+            <h1 class="heading">CDOT Assessment</h1>
+            <!-- Header section with links -->
+            <div class="header">
+                <div class="nav-links">
+                    <a href="/drkweb">Dark Web</a>
+                    <a href="/telegram">Hactivist and Terrorism</a>
+                    <a href="/phishing">Phishing</a>
+                </div>
+            </div>
+            <div class="line"></div>
+            <form class="form-container" action="/" method="post" onsubmit="validateForm(event)">
+                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="image" src="/searchlogo1.png" alt="submit" style="width: 60px; height: auto; vertical-align: bottom;">
+                <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Two-column layout for MinIO files and additional content -->
+    <div class="content">
+        <!-- Left column for MinIO files -->
+        <div class="left-column">
+            <div class="table-container">
+                <h2>MinIO Files</h2>
+                <div id="file-list">
+                    <!-- Files will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column for other content -->
+        <div class="right-column">
+            <h2>Social Media</h2>
+            <p>You can add additional elements here for future use.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+// Script for loading on same page minio and telegram

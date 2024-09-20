@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDOT Assessment</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         /* Define dark mode as the default */
         body {
@@ -43,7 +44,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 10px;
+            padding-top: 5px;
         }
 
         .header-content {
@@ -51,13 +52,13 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 10px;
+            padding: 5px;
             top: 5px;
             box-sizing: border-box;
         }
 
         .logo {
-            width: 45px;
+            width: 35px;
             margin-right: 10px;
         }
 
@@ -78,7 +79,7 @@
             margin: 0 10px;
             text-decoration: none;
             color: var(--text-color);
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .nav-links a:hover {
@@ -99,18 +100,20 @@
             justify-content: center;
             text-align: center;
             top: 8px;
+            width: 50%;
+            padding: 5px;
         }
 
         .form-container input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            width: 250px;
+            padding: 5px;
+            font-size: 14px;
+            width: 200px;
             border-radius: 6px;
             box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
         }
 
         .form-container input[type="image"] {
-            width: 60px;
+            width: 50px;
             height: auto;
             vertical-align: bottom;
             /* padding: 8px 10px;
@@ -198,7 +201,7 @@
             fetch('/minio-files')
                 .then(response => response.json())
                 .then(data => {
-                    if (Array.isArray(data)) {
+                    if (Array.isArray(data) && data.length > 0) {
                         let table = '<table><tr><th>File Name</th></tr>';
                         data.forEach(file => {
                             const fileNameWithoutExtension = file.replace(/\.[^/.]+$/, "");
@@ -243,10 +246,87 @@
                 });
         }
 
+        // Pie Charts
+        async function fetchChartData() {
+            try {
+                const response = await fetch('/pie-chart-data'); // Adjust the route as needed
+                const data = await response.json();
+
+                if (Array.isArray(data) && data.length > 0) {
+                    const labels = data.map(bucket => bucket.key); // Extract categories
+                    const values = data.map(bucket => bucket.doc_count); // Extract counts
+
+                    // Create the pie chart
+                    const pieData = [{
+                        values: values,
+                        labels: labels,
+                        type: 'pie'
+                    }];
+
+                    const layout = {
+                        title: 'Threat Categories',
+                        height: 400,
+                        width: 500,
+                        font: {
+                            color: '#fff' // Set white font color for dark mode
+                        },
+                        paper_bgcolor: '#1e1e1e', // Background color for dark mode
+                        plot_bgcolor: '#1e1e1e'
+                    };
+
+                    // Plot the chart in the "pie-chart" div
+                    Plotly.newPlot('pie-chart', pieData, layout);
+                } else {
+                    document.getElementById('pie-chart').innerHTML = 'No data to display';
+                }
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        }
+
+        async function fetchFolderCountData() {
+            try {
+                const response = await fetch('/folder-count');  // Fetch the folder counts
+                const data = await response.json();
+
+                if (Object.keys(data).length > 0) {
+                    const labels = Object.keys(data);  // Folder names as labels
+                    const values = Object.values(data);  // File counts as values
+
+                    // Create the pie chart
+                    const pieData = [{
+                        values: values,
+                        labels: labels,
+                        type: 'pie'
+                    }];
+
+                    const layout = {
+                        title: 'Files by Folder',
+                        height: 400,
+                        width: 500,
+                        font: {
+                            color: '#fff'  // White text for dark mode
+                        },
+                        paper_bgcolor: '#1e1e1e',  // Dark background
+                        plot_bgcolor: '#1e1e1e'
+                    };
+
+                    Plotly.newPlot('folder-pie-chart', pieData, layout);
+                } else {
+                    document.getElementById('folder-pie-chart').innerHTML = 'No data to display';
+                }
+            } catch (error) {
+                console.error('Error fetching folder count data:', error);
+                document.getElementById('folder-pie-chart').innerHTML = 'Error loading data';
+            }
+        }
+
         // Combine both functions under a single window.onload event
         window.onload = function() {
             loadFiles();  // Load MinIO files
             loadIndiaRelatedAlerts();  // Load India-related alerts
+            fetchChartData();  // Load Pie Chart data
+            fetchFolderCountData();
         };
 
         function search(event) {
@@ -302,7 +382,7 @@
     
     <div class="container">
         <div class="header-content">
-            <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
+            <a href="/"><img class="logo" src="/logo1.png" alt="Logo"></a>
             <!-- <h1 class="heading">CDOT Assessment</h1> -->
             <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
                 <input type="text" name="input_string" placeholder="Enter keyword to Search">
@@ -310,8 +390,8 @@
                 <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
             </form>
             <div class="nav-links">
-                <a href="/drkweb">Dark Web</a>
-                <a href="/telegram">Hactivist and Terrorism</a>
+                <a href="/drkweb">DarkWeb</a>
+                <a href="/telegram">Hactivist & Terrorism</a>
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
@@ -325,7 +405,7 @@
         <!-- Left column for MinIO files -->
         <div class="left-column">
             <h2>DarkWeb Files</h2>
-            <div id="file-list">
+            <div id="folder-pie-chart">
                 <!-- Files will be loaded here -->
             </div>
         </div>
@@ -333,10 +413,10 @@
         <!-- Right column for other content -->
         <div class="right-column">
             <h2>Social Media</h2>
-            <div id="alerts-list">
-
-            </div>
+            <div id="pie-chart" style="width:100%; height:400px;"></div> <!-- Chart will render here -->
+            <p>You can add additional elements here for future use.</p>
         </div>
+        
     </div>
 </body>
 </html>
