@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 timestampCell.textContent = istTime;
                 row.appendChild(timestampCell);
 
+                const categoriesCell = document.createElement("td");
+                categoriesCell.textContent = message._source.categories ? message._source.categories.join(', ') : 'No Categories';
+                row.appendChild(categoriesCell);
+
                 // const indiaRelatedCell = document.createElement("td");
                 // indiaRelatedCell.textContent = message._source.is_india_related ? "Yes" : "No";
                 // row.appendChild(indiaRelatedCell);

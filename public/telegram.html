@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <iframe 
+        src="http://localhost:5601/app/dashboards#/view/ad7c9bd0-68ec-11ef-9a62-bbd18dfe9698?embed=true&_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow%2Fw%2Cto%3Anow%2Fw))"  
+        height="600" 
+        width="100%">
+    </iframe>
     <h1>Messages</h1>
     <button id="alertsButton">Show Alerts</button>
     <table id="messagesTable">
@@ -15,13 +20,13 @@
                 <th>Channel</th>
                 <th>Message</th>
                 <th>Timestamp</th>
+                <th>Categories</th>
             </tr>
         </thead>
         <tbody id="messagesTableBody">
             
         </tbody>
     </table>
-
     <script src="main.js"></script>
 </body>
 </html>

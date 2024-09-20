@@ -59,37 +59,23 @@ app.get('/phishing', (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CDOT Phishing Assessment</title>
         <style>
-            /* Define default colors for light mode */
-            :root {
-                --background-color: #f5f5f5;
-                --text-color: #000;
-                --line-color: #1F618D;
-                --button-background-color: #1669D3;
-                --button-hover-color: #1F618D;
-                --table-header-bg: #4CAF50;
-                --table-row-bg: rgba(199, 245, 245, 0.25);
-                --table-row-hover-bg: #ddd;
-            }
-            /* Dark mode styles */
-            body.dark-mode {
+            body {
                 --background-color: #1e1e1e;
                 --text-color: #fff;
-                --line-color: #fff; /* Change line color in dark mode */
+                --line-color: #fff;
                 --button-background-color: #1669D3;
                 --button-hover-color: #1669D3;
                 --table-header-bg: #2C3E50;
                 --table-row-bg: rgba(255, 255, 255, 0.1);
                 --table-row-hover-bg: #333;
-            }
-            body {
                 background-color: var(--background-color);
                 color: var(--text-color);
                 font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
                 height: 100vh;
-                overflow: hidden;  /* Prevent body scroll */
-                transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
+                transition: background-color 0.5s ease, color 0.5s ease;
+                overflow: hidden;
             }
             .background {
                 position: absolute;
@@ -105,7 +91,7 @@ app.get('/phishing', (req, res) => {
             }
             .container {
                 position: relative;
-                height: 100vh;
+                height: 75vh;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -117,25 +103,29 @@ app.get('/phishing', (req, res) => {
                 position: absolute;
                 top: 30px;
                 left: 30px;
-                width: 60px; /* Adjust the logo size */
+                width: 45px; /* Adjust the logo size */
             }
-            .heading {
-                color: #1669D3;
-                /*color: var(--line-color);*/
-                /*color: #1F618D;*/
+            .head-image {
                 position: absolute;
-                top: 50px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 40px;
-                font-weight: bold;
-                text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2); /* Subtle shadow for depth */
-                margin: 0;
-                z-index: 2;
+                top: 32px;
+                right: 175px;
+                width: 70px;
+                opacity:0.45;
+                box-shadow: 2px 6px 10px rgba(255, 255, 255, 0.6);
+            }
+            .head-text {
+                position: absolute;
+                top: 17px;
+                right: 10px;
+                font-size: 20px;
+                color:#1F618D;
+                width: 160px;
+                word-wrap: break-word;
+                text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.3); /* Subtle shadow for depth */
             }
             .line {
                 position: absolute;
-                top: 160px;
+                top: 120px;
                 width: 100%; /* 75% of the screen width */
                 height: 2px; /* Thickness of the line */
                 background-color: #1F618D; /* English Blue color */ 
@@ -143,17 +133,22 @@ app.get('/phishing', (req, res) => {
             }
             .form-container {
                 position: absolute;
-                top: 100px;
-                right: 50px;
-                z-index: 1;
+                top: 40px;
+                right: 42%;
+                /*border: 1px solid white;*/
+                /*padding: 10px;
+                border-style: ridge;
+                border-color: grey;
+                box-shadow: 0px 4px 8px rgba(255,255, 255, 0.4);*/
             }
             .form-container input[type="text"] {
-                padding: 8px;
-                font-size: 20px;
-                color: var(--text-color); /* Ensure form text color changes */
-                background-color: var(--background-color); /* Ensure background changes */
-                border: 1px solid var(--line-color); /* Match the border color */
-                border-radius: 5px;
+                padding: 10px;
+                font-size: 16px;
+                /*border-style: ridge;
+                border-color: grey;*/
+                width: 250px;
+                border-radius: 6px;
+                box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
             }
             .form-container input[type="submit"] {
                 padding: 8px 10px;
@@ -184,24 +179,6 @@ app.get('/phishing', (req, res) => {
                 margin-right: auto;
                 border-radius: 10px;
                 box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-            }
-            .theme-toggle {
-                position: absolute;
-                top: 30px;
-                right: 50px;
-                /*background-color: #1669D3;*/
-                background-color: var(--button-background-color); 
-                color: white;
-                border: none;
-                padding: 8px 10px;
-                cursor: pointer;
-                font-size: 16px;
-                border-radius: 5px;
-                transition: background-color 0.3s ease;
-            }
-            .theme-toggle:hover {
-                /*background-color: #1F618D;*/
-                background-color: var(--button-hover-color);
             }
             table {
                 width: 100%;
@@ -273,13 +250,13 @@ app.get('/phishing', (req, res) => {
     <body>
         <div class="background"></div>
         <div class="container">
-            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
             <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
-            <h1 class="heading">Comprehensive Phishing Assessment</h1>
+            <img class="head-image" src="/suspicious.png" alt="Logo">
+            <h1 class="head-text">Comprehensive Phishing Assessment</h1>
             <div class="line"></div>
             <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
                 <input type="text" name="input_string" placeholder="Enter Domain here">
-                <input type="submit" value="Search">
+                <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
                 <div id="error-message" class="error-message">*Please Enter a valid domain</div>
             </form>
         </div>
@@ -352,7 +329,6 @@ app.post('/submit', (req, res) => {
                     <body>
                         <div class="background"></div>
                         <div class="container">
-                            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
                             <a href="/"><img class="logo" src="/logo.png" alt="logo"></a>
                             <h1 class="heading">Results for: ${inputString}</h1>
                             <div class="line"></div>
@@ -497,6 +473,39 @@ app.get('/minio-files', async (req, res) => {
     } catch (err) {
         console.error('Error fetching MinIO files:', err);
         res.status(500).json({ error: 'Failed to fetch file names from MinIO.' });
+    }
+});
+
+app.post('/api/search', async (req, res) => {
+    const keyword = req.body.input_string;
+
+    try {
+        // Search in Elasticsearch for messages
+        const esResponse = await client.search({
+            index: 'telegram_messages',
+            body: {
+                query: {
+                    multi_match: {
+                        query: keyword,
+                        fields: ['text', 'categories']
+                    }
+                }
+            }
+        });
+
+        // Search in MinIO for files matching the keyword
+        const minioFiles = await listFiles();  // A function to list MinIO files
+        const filteredFiles = minioFiles.filter(file => file.includes(keyword));
+
+        // Combine results
+        res.json({
+            elasticsearchResults: esResponse.hits.hits,
+            minioFiles: filteredFiles
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while searching' });
     }
 });
 

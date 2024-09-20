@@ -5,50 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDOT Assessment</title>
     <style>
-        /* Define default colors for light mode */
-        :root {
-            --background-color: #f5f5f5;
-            --text-color: #000;
-            --line-color: #1F618D;
-            --button-background-color: #1669D3;
-            --button-hover-color: #1F618D;
-            --table-header-bg: #4CAF50;
-            --table-row-bg: rgba(199, 245, 245, 0.25);
-            --table-row-hover-bg: #ddd;
-        }
-
-        /* Dark mode styles */
-        body.dark-mode {
+        /* Define dark mode as the default */
+        body {
             --background-color: #1e1e1e;
             --text-color: #fff;
-            --line-color: #fff; /* Change line color in dark mode */
+            --line-color: #fff;
             --button-background-color: #1669D3;
             --button-hover-color: #1669D3;
             --table-header-bg: #2C3E50;
             --table-row-bg: rgba(255, 255, 255, 0.1);
             --table-row-hover-bg: #333;
-        }
-
-        body {
             background-color: var(--background-color);
             color: var(--text-color);
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
-            transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition */
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         .background {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 60%;
+            left: 50%;
+            width: 70%;
+            height: 70%;
             background: url('/background.png') no-repeat center center;
             background-size: cover;
             opacity: 0.05;
+            transform: translate(-50%, -50%);
             z-index: -1;
+            overflow: auto;
         }
 
         .container {
@@ -56,41 +43,39 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px;
+            padding-top: 10px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+            top: 5px;
+            box-sizing: border-box;
         }
 
         .logo {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            width: 60px;
+            width: 45px;
+            margin-right: 10px;
         }
 
         .heading {
             color: #1669D3;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 40px;
+            font-size: 30px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
             margin: 0;
-            z-index: 2;
-        }
-
-        /* Header section with navigation links */
-        .header {
-            text-align: center;
-            padding-bottom: 20px;
+            word-wrap: break-word;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
         }
 
         .nav-links {
-            margin-top: 75px;
+            margin-left: auto;
         }
 
         .nav-links a {
-            margin: 0 15px;
+            margin: 0 10px;
             text-decoration: none;
             color: var(--text-color);
             font-size: 18px;
@@ -101,82 +86,80 @@
         }
 
         .line {
-            position: absolute;
-            top: 180px;
             width: 100%;
             height: 2px;
-            background-color: #1F618D;
+            background-color: var(--line-color);
+            margin: 0;
         }
 
+        /* Center the search form */
         .form-container {
-            position: absolute;
-            top: 100px;
-            right: 50px;
-            z-index: 1;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            top: 8px;
         }
 
         .form-container input[type="text"] {
-            padding: 8px;
-            font-size: 20px;
-            color: var(--text-color);
-            background-color: var(--background-color);
-            border: 1px solid var(--line-color);
-            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            width: 250px;
+            border-radius: 6px;
+            box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
         }
 
-        .form-container input[type="submit"] {
-            padding: 8px 10px;
+        .form-container input[type="image"] {
+            width: 60px;
+            height: auto;
+            vertical-align: bottom;
+            /* padding: 8px 10px;
             font-size: 20px;
             cursor: pointer;
             color: var(--text-color);
             background-color: var(--button-background-color);
             border: none;
             border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .form-container input[type="submit"]:hover {
-            background-color: var(--button-hover-color);
+            margin-left: 10px; */
         }
 
         .error-message {
             color: red;
             font-size: 14px;
-            margin-top: 1px;
+            margin-top: 10px;
             display: none;
         }
 
-        /* Layout for the two-column design */
         .content {
             display: flex;
-            flex-direction: row;
             justify-content: space-between;
-            margin-top: 60px;
-            padding: 0 20px;
-            height: 70vh; /* Set height for consistent layout */
+            margin: 40px;
         }
 
-        /* Left side for MinIO File Browser */
-        .left-column {
-            width: 45%; /* Take 45% of the page width */
-            max-height: 100%; /* Ensure it doesn't overflow */
-            overflow-y: auto;
-            padding-right: 10px; /* Add space between columns */
+        .left-column, .right-column {
+            width: 48%;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            max-height: 650px; /* Limit the height */
+            overflow-y: auto; /* Add vertical scroll if content exceeds height */
+            overflow-x: auto;
         }
 
         .table-container {
             padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
         }
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
+            word-wrap: break-word;
         }
         th {
             background-color: var(--table-header-bg);
@@ -188,57 +171,16 @@
             background-color: var(--table-row-hover-bg);
         }
 
-        /* Right side for additional content */
-        .right-column {
-            width: 50%; /* Take 50% of the page width */
-            max-height: 100%; /* Ensure it doesn't overflow */
-            overflow-y: auto;
-            padding-left: 10px; /* Add space between columns */
-            background-color: rgba(0, 0, 0, 0.05); /* Light background for distinction */
-            border-radius: 10px;
-            padding: 20px;
+        a {
+            color: #689fc4;
+            text-decoration: none;
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 30px;
-            right: 50px;
-            background-color: var(--button-background-color);
-            color: white;
-            border: none;
-            padding: 8px 10px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+        a:hover {
+            text-decoration: underline;
         }
-
-        .theme-toggle:hover {
-            background-color: var(--button-hover-color);
-        }
-
     </style>
     <script>
-        function toggleTheme() {
-            const body = document.body;
-            const isDarkMode = body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-            updateButtonText(isDarkMode);
-        }
-
-        function updateButtonText(isDarkMode) {
-            const toggleButton = document.getElementById('theme-toggle-btn');
-            toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-        }
-
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-            updateButtonText(savedTheme === 'dark');
-        }
-
         function validateForm(event) {
             const input = document.querySelector('input[name="input_string"]');
             const errorMessage = document.getElementById('error-message');
@@ -251,6 +193,7 @@
             }
         }
 
+        // Function to load MinIO files
         function loadFiles() {
             fetch('/minio-files')
                 .then(response => response.json())
@@ -258,7 +201,8 @@
                     if (Array.isArray(data)) {
                         let table = '<table><tr><th>File Name</th></tr>';
                         data.forEach(file => {
-                            table += `<tr><td><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${file}</a></td></tr>`;
+                            const fileNameWithoutExtension = file.replace(/\.[^/.]+$/, "");
+                            table += `<tr><td><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${fileNameWithoutExtension}</a></td></tr>`;
                         });
                         table += '</table>';
                         document.getElementById('file-list').innerHTML = table;
@@ -270,54 +214,128 @@
                     document.getElementById('file-list').innerHTML = `<p>Error loading files: ${error.message}</p>`;
                 });
         }
-        window.onload = function() {
-            loadFiles();
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-            updateButtonText(savedTheme === 'dark');
+
+        // Function to load India-related alerts
+        function loadIndiaRelatedAlerts() {
+            fetch('/api/messages?isIndiaRelated=true')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        let table = '<table><tr><th>Channel</th><th>Message</th><th>Timestamp</th></tr>';
+                        data.forEach(message => {
+                            const istTime = new Date(message._source.timestamp).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+                            table += `
+                                <tr>
+                                    <td>${message._source.channel}</td>
+                                    <td>${message._source.text}</td>
+                                    <td>${istTime}</td>
+                                </tr>
+                            `;
+                        });
+                        table += '</table>';
+                        document.getElementById('alerts-list').innerHTML = table;
+                    } else {
+                        document.getElementById('alerts-list').innerHTML = '<p>No alerts found.</p>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('alerts-list').innerHTML = `<p>Error loading alerts: ${error.message}</p>`;
+                });
         }
+
+        // Combine both functions under a single window.onload event
+        window.onload = function() {
+            loadFiles();  // Load MinIO files
+            loadIndiaRelatedAlerts();  // Load India-related alerts
+        };
+
+        function search(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const keyword = formData.get('input_string');
+
+            fetch('/api/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ input_string: keyword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous results
+                document.getElementById('file-list').innerHTML = '';
+                document.getElementById('elastic-results').innerHTML = '';
+
+                // Display MinIO files
+                if (data.minioFiles.length > 0) {
+                    let fileTable = '<table><tr><th>File Name</th></tr>';
+                    data.minioFiles.forEach(file => {
+                        fileTable += `<tr><td><a href="/fetch/${file}" target="_blank">${file}</a></td></tr>`;
+                    });
+                    fileTable += '</table>';
+                    document.getElementById('file-list').innerHTML = fileTable;
+                } else {
+                    document.getElementById('file-list').innerHTML = '<p>No MinIO files found.</p>';
+                }
+
+                // Display Elasticsearch results
+                if (data.elasticsearchResults.length > 0) {
+                    let messageTable = '<table><tr><th>Channel</th><th>Message</th></tr>';
+                    data.elasticsearchResults.forEach(hit => {
+                        messageTable += `<tr><td>${hit._source.channel}</td><td>${hit._source.text}</td></tr>`;
+                    });
+                    messageTable += '</table>';
+                    document.getElementById('elastic-results').innerHTML = messageTable;
+                } else {
+                    document.getElementById('elastic-results').innerHTML = '<p>No messages found.</p>';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
     </script>
 </head>
 <body>
     <div class="background"></div>
+    
     <div class="container">
-        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
-        <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
-        <h1 class="heading">CDOT Assessment</h1>
-        <!-- Header section with links -->
-        <div class="header">
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
+            <!-- <h1 class="heading">CDOT Assessment</h1> -->
+            <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
+                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="image" src="/searchlogo1.png" alt="submit">
+                <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
+            </form>
             <div class="nav-links">
                 <a href="/drkweb">Dark Web</a>
                 <a href="/telegram">Hactivist and Terrorism</a>
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
+
         <div class="line"></div>
-        <form class="form-container" action="/" method="post" onsubmit="validateForm(event)">
-            <input type="text" name="input_string" placeholder="Enter keyword to Search">
-            <input type="submit" value="Search">
-            <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
-        </form>
+
+        
     </div>
 
-    <!-- Two-column layout for MinIO files and additional content -->
     <div class="content">
         <!-- Left column for MinIO files -->
         <div class="left-column">
-            <div class="table-container">
-                <h2>MinIO Files</h2>
-                <div id="file-list">
-                    <!-- Files will be loaded here -->
-                </div>
+            <h2>DarkWeb Files</h2>
+            <div id="file-list">
+                <!-- Files will be loaded here -->
             </div>
         </div>
 
         <!-- Right column for other content -->
         <div class="right-column">
             <h2>Social Media</h2>
-            <p>You can add additional elements here for future use.</p>
+            <div id="alerts-list">
+
+            </div>
         </div>
     </div>
 </body>
