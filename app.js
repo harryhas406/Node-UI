@@ -570,7 +570,7 @@ app.get('/folder-count', async (req, res) => {
         });
 
         // Log the folder counts for debugging purposes
-        console.log('Folder Counts:', folderCounts);
+        // console.log('Folder Counts:', folderCounts);
 
         // Respond with the folder count data
         res.json(folderCounts);
