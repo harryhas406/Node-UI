@@ -73,7 +73,11 @@
         } */
 
         .nav-links {
-            margin-left: auto;
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+            /* margin-left: auto; */
         }
 
         .nav-links a {
@@ -96,13 +100,20 @@
 
         /* Center the search form */
         .form-container {
-            flex-grow: 1;
+            /* flex-grow: 1;
             display: flex;
-            justify-content: center;
-            text-align: center;
+            justify-content: right;
+            text-align: right;
             top: 8px;
             width: 50%;
-            padding: 5px;
+            padding: 5px; */
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 50%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 4px;
         }
 
         .form-container input[type="text"] {
@@ -110,7 +121,7 @@
             font-size: 14px;
             width: 200px;
             border-radius: 6px;
-            box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
+            box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
         }
 
         .form-container input[type="image"] {
@@ -196,6 +207,7 @@
         a:hover {
             text-decoration: underline;
         }
+        
     </style>
     <script>
         function validateForm(event) {
@@ -323,11 +335,16 @@
                 const response = await fetch('/folder-count');  // Fetch the folder counts
                 const data = await response.json();
 
+                // Log the response for debugging
+                console.log('Fetched Data:', data);
+
                 if (Object.keys(data).length > 0) {
                     const dataPoints = Object.keys(data).map(folder => ({
                         y: data[folder],  // File counts as values
                         name: folder      // Folder names as labels
                     }));
+
+                    console.log('Data Points:', dataPoints);
 
                     // Create the CanvasJS pie chart
                     var chart = new CanvasJS.Chart("folder-pie-chart", {
@@ -342,7 +359,7 @@
                             type: "doughnut",
                             showInLegend: true,
                             toolTipContent: "{name}: <strong>{y}</strong>",
-                            indexLabel: "{name} - {y}%",  // Format for index labels
+                            indexLabel: "{name} - {y}",  // Folder name and file count
                             indexLabelFontColor: "#fff",  // White text for labels
                             dataPoints: dataPoints
                         }],
@@ -351,6 +368,14 @@
                         }
                     });
 
+                    // Display folder names as clickable links
+                    let folderLinks = '';
+                    dataPoints.forEach(folder => {
+                        folderLinks += `<li><a href="/drkweb/${encodeURIComponent(folder.name)}">${folder.name}</a></li>`;
+                    });
+                    document.getElementById('folder-links').innerHTML = `<ul>${folderLinks}</ul>`;
+
+                    // Render the chart
                     chart.render();
                 } else {
                     document.getElementById('folder-pie-chart').innerHTML = 'No data to display';
@@ -361,6 +386,8 @@
             }
         }
 
+
+        // Chart for displaying phishing data
         async function displayPhishingData() {
             var chart = new CanvasJS.Chart("phishingData", {
                 animationEnabled: true,
@@ -372,7 +399,13 @@
                 },
                 axisY: {
                     title: "Phishing",
-                    fontColor: "#fff"
+                    fontColor: "#fff",  // Set y-axis title color to white
+                    labelFontColor: "#fff"  // Set y-axis label color to white
+                },
+                axisX: {
+                    title: "Domain",
+                    fontColor: "#fff",  // Set x-axis title color to white
+                    labelFontColor: "#fff"  // Set x-axis label color to white
                 },
                 data: [{        
                     type: "column",  
@@ -466,6 +499,7 @@
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
                 <a href="/telegram">Hactivist & Terrorism</a>
+                <a href="/ransom">RansomWare</a>
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
@@ -476,10 +510,17 @@
         <!-- Box 1 -->
         <div class="column">
             <h5>DARKWEB FILES</h5>
-            <div id="folder-pie-chart" style="height: 400px; width: 100%; background: transparent;">
-                <!-- Files will be loaded here -->
+            <!-- Links to folders -->
+            <div id="folder-links" style="width: 20%; text-align: left;">
+                <!-- Folder links will be inserted here -->
+            </div>
+    
+            <!-- Pie chart display -->
+            <div id="folder-pie-chart" style="width: 80%; height: 400px; background: transparent;">
+                <!-- Chart will be rendered here -->
             </div>
         </div>
+        
     
         <!-- Box 2 -->
         <div class="column">
@@ -491,10 +532,9 @@
         <div class="column">
             <h5>RANSOM STATS OF MONTH</h5>
             <!-- Embedding monthgraph.html in this box -->
-            <iframe src="/monthgraph.html" style="width:100%; height:350px; border:none;"></iframe>
+            <iframe src="/bar_chart_last_7_days.html" style="width:100%; height:350px; border:none;"></iframe>
         </div>
         
-    
         <!-- Box 4 -->
         <div class="column">
             <h5>PHISHING</h5>

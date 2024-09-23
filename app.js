@@ -446,7 +446,7 @@ app.get('/fetch/*', (req, res) => {
 });
 // Route to serve static HTML page for MinIO browser
 app.get('/drkweb', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'minio.html'));
+    res.sendFile(path.join(__dirname, 'public', 'darkweb.html'));
 });
 
 // Utility function to fetch files recursively
