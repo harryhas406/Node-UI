@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDOT Assessment</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
     <style>
         /* Define dark mode as the default */
         body {
@@ -21,7 +23,6 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
@@ -36,7 +37,7 @@
             opacity: 0.05;
             transform: translate(-50%, -50%);
             z-index: -1;
-            overflow: auto;
+            /* overflow: auto; */
         }
 
         .container {
@@ -62,14 +63,14 @@
             margin-right: 10px;
         }
 
-        .heading {
+        /* .heading {
             color: #1669D3;
             font-size: 30px;
             font-weight: bold;
             margin: 0;
             word-wrap: break-word;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
-        }
+        } */
 
         .nav-links {
             margin-left: auto;
@@ -135,18 +136,31 @@
 
         .content {
             display: flex;
+            flex-wrap: wrap; /* Allow the items to wrap into multiple rows */
             justify-content: space-between;
-            margin: 40px;
+            margin: 20px;
+            gap: 20px; /* Add gap between the boxes */
+            overflow-y: auto;
         }
 
-        .left-column, .right-column {
+        .column {
             width: 48%;
-            padding: 20px;
+            padding: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
             border-radius: 10px;
-            max-height: 650px; /* Limit the height */
-            overflow-y: auto; /* Add vertical scroll if content exceeds height */
-            overflow-x: auto;
+            height: 400px; /* Adjust height as needed */
+            /* overflow-x: auto; */
+            overflow: hidden;  /* Add vertical scroll if content exceeds height */
+            background-color: #313840; /* Add background color */
+            display: flex; /* Enable flexbox */
+            flex-direction: column; /* Align items vertically */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        .column h5{
+            margin-top: 0;
+            text-align: left;  
         }
 
         .table-container {
@@ -196,7 +210,7 @@
             }
         }
 
-        // Function to load MinIO files
+        // Function to load darkweb files
         function loadFiles() {
             fetch('/minio-files')
                 .then(response => response.json())
@@ -218,7 +232,7 @@
                 });
         }
 
-        // Function to load India-related alerts
+        // Function to load India-related alerts table format
         function loadIndiaRelatedAlerts() {
             fetch('/api/messages?isIndiaRelated=true')
                 .then(response => response.json())
@@ -246,72 +260,98 @@
                 });
         }
 
-        // Pie Charts
+        // Donut Chart using canvasjs for Social Media
         async function fetchChartData() {
             try {
                 const response = await fetch('/pie-chart-data'); // Adjust the route as needed
                 const data = await response.json();
 
                 if (Array.isArray(data) && data.length > 0) {
-                    const labels = data.map(bucket => bucket.key); // Extract categories
-                    const values = data.map(bucket => bucket.doc_count); // Extract counts
+                    const dataPoints = data.map(bucket => ({
+                        y: bucket.doc_count,
+                        name: bucket.key
+                    }));
 
-                    // Create the pie chart
-                    const pieData = [{
-                        values: values,
-                        labels: labels,
-                        type: 'pie'
-                    }];
-
-                    const layout = {
-                        title: 'Threat Categories',
-                        height: 400,
-                        width: 500,
-                        font: {
-                            color: '#fff' // Set white font color for dark mode
+                    // Create the CanvasJS donut chart
+                    var chart = new CanvasJS.Chart("chartContainer", {
+                        exportEnabled: true,
+                        animationEnabled: true,
+                        backgroundColor: "transparent", // Set background color to transparent
+                        legend: {
+                            cursor: "pointer",
+                            itemclick: explodePie,
+                            fontColor: "#fff" // Set legend text color to white
                         },
-                        paper_bgcolor: '#1e1e1e', // Background color for dark mode
-                        plot_bgcolor: '#1e1e1e'
-                    };
-
-                    // Plot the chart in the "pie-chart" div
-                    Plotly.newPlot('pie-chart', pieData, layout);
+                        data: [{
+                            type: "doughnut",
+                            showInLegend: true,
+                            toolTipContent: "<span style='color: #ff5733'>{name}</span>: <strong>{y}%</strong>",
+                            indexLabel: "{name} - {y}%",
+                            indexLabelFontColor: "#fff",  // Set index label color to white
+                            innerRadius: "60%", // Set inner radius for donut effect
+                            dataPoints: dataPoints
+                        }],
+                        credits: {
+                            enabled: false  // Disable the watermark
+                        }
+                    });
+                    chart.render();
                 } else {
-                    document.getElementById('pie-chart').innerHTML = 'No data to display';
+                    document.getElementById('chartContainer').innerHTML = 'No data to display';
                 }
             } catch (error) {
                 console.error('Error fetching chart data:', error);
             }
         }
 
+        // Explode pie slice on click
+        function explodePie(e) {
+            if (typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+                e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+            } else {
+                e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+            }
+            e.chart.render();
+        }
+
+        // Call the fetchChartData function to load the chart
+        // fetchChartData();
+
+        // Pie chart for darkweb files display
         async function fetchFolderCountData() {
             try {
                 const response = await fetch('/folder-count');  // Fetch the folder counts
                 const data = await response.json();
 
                 if (Object.keys(data).length > 0) {
-                    const labels = Object.keys(data);  // Folder names as labels
-                    const values = Object.values(data);  // File counts as values
+                    const dataPoints = Object.keys(data).map(folder => ({
+                        y: data[folder],  // File counts as values
+                        name: folder      // Folder names as labels
+                    }));
 
-                    // Create the pie chart
-                    const pieData = [{
-                        values: values,
-                        labels: labels,
-                        type: 'pie'
-                    }];
-
-                    const layout = {
-                        title: 'Files by Folder',
-                        height: 400,
-                        width: 500,
-                        font: {
-                            color: '#fff'  // White text for dark mode
+                    // Create the CanvasJS pie chart
+                    var chart = new CanvasJS.Chart("folder-pie-chart", {
+                        animationEnabled: true,
+                        backgroundColor: "transparent",  // Transparent background
+                        legend: {
+                            cursor: "pointer",
+                            itemclick: explodePie,
+                            fontColor: "#fff" // Set legend text color to white
                         },
-                        paper_bgcolor: '#1e1e1e',  // Dark background
-                        plot_bgcolor: '#1e1e1e'
-                    };
+                        data: [{
+                            type: "doughnut",
+                            showInLegend: true,
+                            toolTipContent: "{name}: <strong>{y}</strong>",
+                            indexLabel: "{name} - {y}%",  // Format for index labels
+                            indexLabelFontColor: "#fff",  // White text for labels
+                            dataPoints: dataPoints
+                        }],
+                        credits: {
+                            enabled: false  // Disable the watermark
+                        }
+                    });
 
-                    Plotly.newPlot('folder-pie-chart', pieData, layout);
+                    chart.render();
                 } else {
                     document.getElementById('folder-pie-chart').innerHTML = 'No data to display';
                 }
@@ -321,14 +361,48 @@
             }
         }
 
+        async function displayPhishingData() {
+            var chart = new CanvasJS.Chart("phishingData", {
+                animationEnabled: true,
+                backgroundColor: "transparent",  // Transparent background
+                legend: {
+                    cursor: "pointer",
+                    itemclick: explodePie,
+                    fontColor: "#fff" // Set legend text color to white
+                },
+                axisY: {
+                    title: "Phishing",
+                    fontColor: "#fff"
+                },
+                data: [{        
+                    type: "column",  
+                    showInLegend: true, 
+                    legendMarkerColor: "#fff",
+                    legendText: "Domain",
+                    dataPoints: [      
+                        { y: 51, label: "cdot.in" },
+                        { y: 50,  label: "mod.gov.in" },
+                        { y: 136,  label: "dot.in" },
+                        { y: 13,  label: "angelone.in" },
+                        { y: 54,  label: "mea.gov.in" },
+                        { y: 47,  label: "kerala.gov.in" },
+                        { y: 46,  label: "cdac.in" }
+                    ]
+                }]
+            });
+            chart.render();
+        }
+
         // Combine both functions under a single window.onload event
         window.onload = function() {
-            loadFiles();  // Load MinIO files
-            loadIndiaRelatedAlerts();  // Load India-related alerts
+            // loadFiles();  // Load MinIO files
+            // loadIndiaRelatedAlerts();  // Load India-related alerts
             fetchChartData();  // Load Pie Chart data
             fetchFolderCountData();
+            displayPhishingData();
         };
 
+        // Union Search on the home page
         function search(event) {
             event.preventDefault();
 
@@ -348,7 +422,7 @@
                 document.getElementById('file-list').innerHTML = '';
                 document.getElementById('elastic-results').innerHTML = '';
 
-                // Display MinIO files
+                // Display darkweb files
                 if (data.minioFiles.length > 0) {
                     let fileTable = '<table><tr><th>File Name</th></tr>';
                     data.minioFiles.forEach(file => {
@@ -378,7 +452,7 @@
     </script>
 </head>
 <body>
-    <div class="background"></div>
+    <!-- <div class="background"></div> -->
     
     <div class="container">
         <div class="header-content">
@@ -395,28 +469,38 @@
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
-
-        <div class="line"></div>
-
-        
+        <div class="line"></div>        
     </div>
 
     <div class="content">
-        <!-- Left column for MinIO files -->
-        <div class="left-column">
-            <h2>DarkWeb Files</h2>
-            <div id="folder-pie-chart">
+        <!-- Box 1 -->
+        <div class="column">
+            <h5>DARKWEB FILES</h5>
+            <div id="folder-pie-chart" style="height: 400px; width: 100%; background: transparent;">
                 <!-- Files will be loaded here -->
             </div>
         </div>
-
-        <!-- Right column for other content -->
-        <div class="right-column">
-            <h2>Social Media</h2>
-            <div id="pie-chart" style="width:100%; height:400px;"></div> <!-- Chart will render here -->
-            <p>You can add additional elements here for future use.</p>
+    
+        <!-- Box 2 -->
+        <div class="column">
+            <h5>SOCIAL MEDIA</h5>
+            <div id="chartContainer" style="height: 400px; width: 100%; background: transparent;"></div> <!-- Chart will render here -->
+        </div>
+    
+        <!-- Box 3 -->
+        <div class="column">
+            <h5>RANSOM STATS OF MONTH</h5>
+            <!-- Embedding monthgraph.html in this box -->
+            <iframe src="/monthgraph.html" style="width:100%; height:350px; border:none;"></iframe>
         </div>
         
+    
+        <!-- Box 4 -->
+        <div class="column">
+            <h5>PHISHING</h5>
+            <div id="phishingData" style="width: 100%; height: 370px; background: transparent;"></div>
+        </div>
     </div>
+    
 </body>
 </html>
