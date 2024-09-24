@@ -334,11 +334,6 @@ app.post('/submit', (req, res) => {
                             <div class="line"></div>
                             <div class="table-container">${tableHtml}</div>
                         </div>
-                        <script>
-                            function toggleTheme() {
-                                document.body.classList.toggle('dark-mode);
-                            }
-                        </script>
                     </body>
                     </html>
                 `);
@@ -393,7 +388,7 @@ const minioClient = new Minio.Client({
 });
 
 app.get('/list/:prefix?', (req, res) => {
-    const bucketName = 'leaks-web';  // Change to your bucket name
+    const bucketName = 'darkwebleaks';  // Your bucket name
     const prefix = req.params.prefix || '';  // Folder path, empty means root
 
     let objects = [];
@@ -401,11 +396,35 @@ app.get('/list/:prefix?', (req, res) => {
     const stream = minioClient.listObjectsV2(bucketName, prefix, true);
 
     stream.on('data', (obj) => {
-        objects.push(obj);
+        if (obj.prefix) {
+            // Handle folders (if any)
+            return;  // Skip prefixes if you are only interested in files
+        }
+        if (obj.name) {
+            objects.push(obj.name);
+        }
     });
 
     stream.on('end', () => {
-        res.json(objects);  // Send list of objects as JSON
+        // Organize the objects into a folder-based hierarchy
+        const folderStructure = {};
+
+        objects.forEach(objectName => {
+            const [folder, ...fileParts] = objectName.split('/');  // Split on '-'
+            const fileName = fileParts.join('/');  // Join the remaining parts as the file name
+
+            // Initialize folder if not already present
+            if (!folderStructure[folder]) {
+                folderStructure[folder] = [];
+            }
+
+            // Push the file into the corresponding folder
+            if (fileName) {
+                folderStructure[folder].push(fileName);
+            }
+        });
+
+        res.json(folderStructure);  // Send the folder-structured data as JSON
     });
 
     stream.on('error', (err) => {
@@ -416,7 +435,7 @@ app.get('/list/:prefix?', (req, res) => {
 
 // Route to fetch an object (image/data) from a folder
 app.get('/fetch/*', (req, res) => {
-    const bucketName = 'leaks-web';  // Change to your bucket name
+    const bucketName = 'darkwebleaks';  // Change to your bucket name
     const objectPath = req.params[0];  // Capture the full path after /fetch/
 
     minioClient.getObject(bucketName, objectPath, (err, dataStream) => {
@@ -449,6 +468,69 @@ app.get('/drkweb', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'darkweb.html'));
 });
 
+// Route to serve the ransomware data page
+app.get('/ransomware', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ransomposts.html'));  // Serve the HTML page
+});
+
+// Route to serve and display the  ransomware posts
+app.get('/ransomware-posts', (req, res) => {
+    const postsFilePath = path.join(__dirname, 'posts.json');
+
+    fs.readFile(postsFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading posts.json:', err);
+            res.status(500).send('Error loading data');
+            return;
+        }
+
+        try {
+            const posts = JSON.parse(data);
+
+            // Sort posts in descending order by date (assuming UTC format)
+            const sortedPosts = posts.sort((a, b) => {
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+
+                return dateB - dateA;  // Descending order
+            });
+
+            // Limit to the latest 200 posts
+            const latestPosts = sortedPosts.slice(0, 200);
+
+            res.json(latestPosts);
+        } catch (parseError) {
+            console.error('Error parsing JSON data:', parseError);
+            res.status(500).send('Error processing data');
+        }
+    });
+});
+
+app.get('/files/:folderName', (req, res) => {
+    const bucketName = 'darkwebleaks'; // Your bucket name
+    const folderName = req.params.folderName || ''; // Folder path
+
+    let files = [];
+
+    const stream = minioClient.listObjectsV2(bucketName, folderName, true);
+
+    stream.on('data', (obj) => {
+        if (!obj.prefix) {
+            files.push(obj.name); // Collect file names
+        }
+    });
+
+    stream.on('end', () => {
+        res.json(files); // Send the file list as JSON
+    });
+
+    stream.on('error', (err) => {
+        console.error('Error listing files:', err);
+        res.status(500).json({ error: 'Error listing files' });
+    });
+});
+
+
 // Utility function to fetch files recursively
 async function listFiles(bucketName, prefix) {
     let fileList = [];
@@ -464,7 +546,7 @@ async function listFiles(bucketName, prefix) {
 }
 
 app.get('/minio-files', async (req, res) => {
-    const bucketName = 'leaks-web';
+    const bucketName = 'darkwebleaks';
     const folderPrefix = req.params.prefix; // The folder path where images are stored
 
     try {
@@ -509,7 +591,7 @@ app.post('/api/search', async (req, res) => {
     }
 });
 
-//Fetching Data from Elasticsearch
+// Fetching Data from Elasticsearch for pie chart
 async function fetchElasticData() {
     try {
         const result = await client.search({
@@ -533,7 +615,7 @@ async function fetchElasticData() {
     }
 }
 
-//Once the data is fetched, you need to prepare it in the format suitable for the pie chart.
+// Once the data is fetched, you need to prepare it in the format suitable for the pie chart.
 app.get('/pie-chart-data', async (req, res) => {
     try {
         const buckets = await fetchElasticData(); // Assuming fetchElasticData is your function
@@ -544,10 +626,10 @@ app.get('/pie-chart-data', async (req, res) => {
     }
 });
 
-// New route to fetch folder count data from MinIO
+// New route to fetch folder count data from MinIO for pie chart
 app.get('/folder-count', async (req, res) => {
     try {
-        const bucketName = 'leaks-web';  // Replace with your actual MinIO bucket name
+        const bucketName = 'darkwebleaks';  // Replace with your actual MinIO bucket name
         const stream = minioClient.listObjectsV2(bucketName, '', true);  // List all objects
         const files = [];
 

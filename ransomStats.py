@@ -47,6 +47,18 @@ def run_data_viz(data):
 
     # Use Plotly's Bar plot to create the bar chart
     fig = px.bar(df_sorted, x='group_name', y='count', color='count', title='Posting Frequency by Group (Last 7 Days)', color_continuous_scale='Portland', template='plotly_dark')
+
+    # Update the layout to change the background color
+    fig.update_layout(
+        plot_bgcolor='rgba(0, 0, 0, 0)',  # Change plot background color
+        paper_bgcolor='rgba(0, 0, 0, 0)',  # Change paper background color
+        title_font=dict(color='white'),  # Title font color
+        xaxis_title_font=dict(color='white'),  # X-axis title font color
+        yaxis_title_font=dict(color='white'),  # Y-axis title font color
+        legend_title_font=dict(color='white'),  # Legend title font color
+        font=dict(color='white')  # Font color
+    )
+
     filename = "bar_chart_last_7_days.html"
     pio.write_html(fig, file=filename)
 

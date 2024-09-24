@@ -77,6 +77,7 @@
             justify-content: center;
             margin: 0 auto;
             width: 100%;
+            z-index: 10;
             /* margin-left: auto; */
         }
 
@@ -85,6 +86,7 @@
             text-decoration: none;
             color: var(--text-color);
             font-size: 16px;
+            z-index: 20;
         }
 
         .nav-links a:hover {
@@ -152,27 +154,57 @@
             margin: 20px;
             gap: 20px; /* Add gap between the boxes */
             overflow-y: auto;
+            background-color: #1c1c1c; /* Dark background for the entire content */
         }
 
         .column {
-            width: 48%;
+            width: 48%; /* Full width for the main column */
             padding: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
             border-radius: 10px;
-            height: 400px; /* Adjust height as needed */
-            /* overflow-x: auto; */
-            overflow: hidden;  /* Add vertical scroll if content exceeds height */
+            height: auto; /* Height adjusts based on content */
             background-color: #313840; /* Add background color */
             display: flex; /* Enable flexbox */
             flex-direction: column; /* Align items vertically */
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
         }
 
-        .column h5{
-            margin-top: 0;
-            text-align: left;  
+        .full-column {
+            flex-direction: column; /* Stack the links and chart vertically */
         }
+
+        .links-chart-wrapper {
+            display: flex; /* Enable flexbox for links and chart */
+            justify-content: space-between; /* Space between links and chart */
+            align-items: flex-start; /* Align items to the top */
+            width: 100%; /* Full width for the wrapper */
+        }
+
+        .links-column {
+            width: 20%; /* Adjust width for links */
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            background-color: #313840; /* Dark background */
+            height: 400px; /* Fixed height for links column */
+            overflow-y: auto; /* Enable vertical scroll for folder links */
+        }
+
+        .chart-column {
+            width: 75%; /* Adjust width for chart */
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            background-color: #313840; /* Dark background */
+            height: 400px; /* Fixed height for chart column */
+        }
+
+        h5 {
+            color: #ffcc00; /* Title color */
+            text-align: center; /* Center the title */
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
 
         .table-container {
             padding: 10px;
@@ -298,14 +330,14 @@
                             type: "doughnut",
                             showInLegend: true,
                             toolTipContent: "<span style='color: #ff5733'>{name}</span>: <strong>{y}%</strong>",
-                            indexLabel: "{name} - {y}%",
+                            indexLabel: "{name} - {y}",
                             indexLabelFontColor: "#fff",  // Set index label color to white
                             innerRadius: "60%", // Set inner radius for donut effect
                             dataPoints: dataPoints
                         }],
-                        credits: {
-                            enabled: false  // Disable the watermark
-                        }
+                        // credits: {
+                        //     enabled: false  // Disable the watermark
+                        // }
                     });
                     chart.render();
                 } else {
@@ -326,10 +358,7 @@
             e.chart.render();
         }
 
-        // Call the fetchChartData function to load the chart
-        // fetchChartData();
-
-        // Pie chart for darkweb files display
+        // Donut chart for darkweb files display using Canvasjs
         async function fetchFolderCountData() {
             try {
                 const response = await fetch('/folder-count');  // Fetch the folder counts
@@ -348,6 +377,7 @@
 
                     // Create the CanvasJS pie chart
                     var chart = new CanvasJS.Chart("folder-pie-chart", {
+                        exportEnabled: true,
                         animationEnabled: true,
                         backgroundColor: "transparent",  // Transparent background
                         legend: {
@@ -371,10 +401,9 @@
                     // Display folder names as clickable links
                     let folderLinks = '';
                     dataPoints.forEach(folder => {
-                        folderLinks += `<li><a href="/drkweb/${encodeURIComponent(folder.name)}">${folder.name}</a></li>`;
+                        folderLinks += `<li><a href="#" onclick="fetchFiles('${encodeURIComponent(folder.name)}')">${folder.name}</a></li>`;
                     });
                     document.getElementById('folder-links').innerHTML = `<ul>${folderLinks}</ul>`;
-
                     // Render the chart
                     chart.render();
                 } else {
@@ -386,10 +415,34 @@
             }
         }
 
+        async function fetchFiles(folderName) {
+            try {
+                const response = await fetch(`/files/${folderName}`); // Fetch files from the specified folder
+                const files = await response.json();
 
-        // Chart for displaying phishing data
+                // Log the response for debugging
+                console.log('Fetched Files:', files);
+
+                if (files.length > 0) {
+                    let fileLinks = '';
+                    files.forEach(file => {
+                        fileLinks += `<li><a href="/files/${encodeURIComponent(file)}">${file}</a></li>`;
+                    });
+                    document.getElementById('file-list').innerHTML = `<ul>${fileLinks}</ul>`; // Display the files
+                } else {
+                    document.getElementById('file-list').innerHTML = 'No files found in this folder.'; // Handle no files case
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                document.getElementById('file-list').innerHTML = 'Error loading files.'; // Handle fetch error
+            }
+        }
+
+
+        // Bar Graph for displaying phishing data using Canvasjs
         async function displayPhishingData() {
             var chart = new CanvasJS.Chart("phishingData", {
+                exportEnabled: true,
                 animationEnabled: true,
                 backgroundColor: "transparent",  // Transparent background
                 legend: {
@@ -433,6 +486,7 @@
             fetchChartData();  // Load Pie Chart data
             fetchFolderCountData();
             displayPhishingData();
+            fetchFiles();
         };
 
         // Union Search on the home page
@@ -498,8 +552,8 @@
             </form>
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
-                <a href="/telegram">Hactivist & Terrorism</a>
-                <a href="/ransom">RansomWare</a>
+                <a href="/telegram">Hactivist_Terrorism</a>
+                <a href="/ransomware">RansomWare</a>
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
@@ -508,20 +562,24 @@
 
     <div class="content">
         <!-- Box 1 -->
-        <div class="column">
+        <div class="column full-column">
             <h5>DARKWEB FILES</h5>
-            <!-- Links to folders -->
-            <div id="folder-links" style="width: 20%; text-align: left;">
-                <!-- Folder links will be inserted here -->
-            </div>
+            <div class="links-chart-wrapper">
+                <div class="links-column">
+                    <div id="folder-links" style="text-align: left;">
+                        <div id="file-list"></div>
+                        <!-- Folder links will be inserted here -->
+                    </div>
+                </div>
     
-            <!-- Pie chart display -->
-            <div id="folder-pie-chart" style="width: 80%; height: 400px; background: transparent;">
-                <!-- Chart will be rendered here -->
+                <div class="chart-column">
+                    <div id="folder-pie-chart" style="height: 400px; background: transparent;">
+                        <!-- Pie chart will be rendered here -->
+                    </div>
+                </div>
             </div>
         </div>
         
-    
         <!-- Box 2 -->
         <div class="column">
             <h5>SOCIAL MEDIA</h5>

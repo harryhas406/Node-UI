@@ -3,64 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MinIO Browser</title>
+    <title>Darkweb Files</title>
     <style>
-        /* Your existing styles */
-    </style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark background for dark mode */
+            color: #e0e0e0; /* Light gray text for better contrast */
+            margin: 0;
+            padding: 0;
+            --background-color: #1e1e1e;
+            --text-color: #fff;
+            --line-color: #fff;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 5px;
+            top: 5px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            width: 35px;
+            margin-right: 10px;
+        }
+
+        /* .heading {
+            color: #1669D3;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0;
+            word-wrap: break-word;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
+        } */
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+            z-index: 10;
+            /* margin-left: auto; */
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            z-index: 20;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .line {
+            width: 100%;
+            height: 2px;
+            background-color: var(--line-color);
+            margin: 0;
+        }
+
+        /* Center the search form */
+        .form-container {
+            /* flex-grow: 1;
+            display: flex;
+            justify-content: right;
+            text-align: right;
+            top: 8px;
+            width: 50%;
+            padding: 5px; */
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 50%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 4px;
+        }
+
+        .form-container input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+            width: 200px;
+            border-radius: 6px;
+            box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
+        }
+
+        .form-container input[type="image"] {
+            width: 50px;
+            height: auto;
+            vertical-align: bottom;
+            /* padding: 8px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color);
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px; */
+        }
+    
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ffffff; /* White for headings */
+        }
+    
+        #file-list {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #1e1e1e; /* Darker background for the file list */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow for depth */
+        }
+    
+        .folder {
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #444; /* Darker border for folders */
+            transition: background-color 0.3s ease;
+        }
+    
+        .folder:hover {
+            background-color: #333; /* Darker background on hover */
+        }
+    
+        .file {
+            margin-left: 25px;
+            font-size: 16px;
+            padding: 5px;
+            transition: color 0.3s ease;
+        }
+    
+        .file a {
+            color: #66b3ff; /* Light blue for links */
+            text-decoration: none;
+        }
+    
+        .file a:hover {
+            color: #0094ff; /* Brighter blue on hover */
+            text-decoration: underline;
+        }
+    
+        .folder-container {
+            margin-left: 20px;
+            display: none;  /* Initially hidden */
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+    
+        .expand-icon {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+    
+        .rotate {
+            transform: rotate(90deg);
+        }
+    
+        /* Smooth animations */
+        @keyframes slideIn {
+            from {
+                max-height: 0;
+            }
+            to {
+                max-height: 1000px;
+            }
+        }
+    
+        @keyframes slideOut {
+            from {
+                max-height: 1000px;
+            }
+            to {
+                max-height: 0;
+            }
+        }
+    </style>    
 </head>
 <body>
-    <h1>DarkWeb Leak File </h1>
+    <div class="container"></div>
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/logo1.png" alt="Logo"></a>
+            <!-- <h1 class="heading">CDOT Assessment</h1> -->
+            <form class="form-container" action="/" method="post" onsubmit="search(event)">
+                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="image" src="/searchlogo1.png" alt="submit">
+            </form>
+            <div class="nav-links">
+                <a href="/drkweb">DarkWeb</a>
+                <a href="/telegram">Hactivist_Terrorism</a>
+                <a href="/ransomware">RansomWare</a>
+                <a href="/phishing">Phishing</a>
+            </div>
+        </div>
+        <div class="line"></div>        
+    </div>
+    <h1>DarkWeb Leak File Explorer</h1>
 
     <div id="file-list">
         <p>Loading...</p>
     </div>
 
     <script>
-        let currentPath = '';  // This will hold the current folder path
-    
-        // Function to load folder contents
-        function loadFolder(prefix = '') {
-            fetch(`/list/${encodeURIComponent(prefix)}`)
+        // Function to toggle folder visibility with animation
+        function toggleFolder(folderId, iconId) {
+            const folderContainer = document.getElementById(folderId);
+            const icon = document.getElementById(iconId);
+
+            if (folderContainer.style.display === 'none') {
+                folderContainer.style.display = 'block';
+                icon.classList.add('rotate');  // Rotate the icon on expand
+                folderContainer.style.animation = 'slideIn 0.3s ease-out';
+            } else {
+                icon.classList.remove('rotate');  // Remove rotation on collapse
+                folderContainer.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    folderContainer.style.display = 'none';
+                }, 300);  // Wait for animation to complete before hiding
+            }
+        }
+
+        // Function to load folder structure
+        function loadFolderStructure() {
+            fetch('/list')
                 .then(response => response.json())
                 .then(data => {
-                    let table = '<table><tr><th>Name</th><th>Type</th></tr>';
-                    let parentFolder = prefix ? prefix.split('/').slice(0, -1).join('/') : ''; // To go back up
-    
-                    // Show a 'Back' link if we're not in the root folder
-                    if (prefix) {
-                        table += `<tr><td><a href="#" onclick="loadFolder('${encodeURIComponent(parentFolder)}')">../ (Go Back)</a></td><td>Folder</td></tr>`;
+                    let html = '';
+                    
+                    // Loop through each folder in the structure
+                    let folderIndex = 0;
+                    for (const [folder, files] of Object.entries(data)) {
+                        const folderId = `folder-${folderIndex}`;
+                        const iconId = `icon-${folderIndex}`;
+
+                        // Display folder name with a clickable icon
+                        html += `<div class="folder" onclick="toggleFolder('${folderId}', '${iconId}')">
+                                    <span id="${iconId}" class="expand-icon">▶</span>${folder}
+                                 </div>`;
+                        html += `<div id="${folderId}" class="folder-container">`;
+
+                        // List files inside this folder
+                        files.forEach(file => {
+                            html += `<div class="file"><a href="/fetch/${encodeURIComponent(folder)}/${encodeURIComponent(file)}" target="_blank">${file}</a></div>`;
+                        });
+
+                        html += '</div>';
+                        folderIndex++;
                     }
-    
-                    // List each item in the folder
-                    data.forEach(item => {
-                        let isDir = item.name.endsWith('/');
-                        let displayName = item.name.replace(prefix, '').replace('/', '');  // Clean up name for display
-    
-                        if (isDir) {
-                            // Folder
-                            table += `<tr><td><a href="#" onclick="loadFolder('${encodeURIComponent(item.name)}')">${displayName}</a></td><td>Folder</td></tr>`;
-                        } else {
-                            // File
-                            let encodedPath = encodeURIComponent(item.name).replace(/%2F/g, '/');
-                            table += `<tr><td><a href="/fetch/${encodedPath}" target="_blank">${displayName}</a></td><td>File</td></tr>`;
-                        }
-                    });
-                    table += '</table>';
-                    document.getElementById('file-list').innerHTML = table;
-    
-                    currentPath = prefix;  // Update current path
+
+                    document.getElementById('file-list').innerHTML = html;
                 })
                 .catch(error => {
-                    document.getElementById('file-list').innerHTML = `<p>Error loading folder: ${error.message}</p>`;
+                    document.getElementById('file-list').innerHTML = `<p>Error loading data: ${error.message}</p>`;
                 });
         }
-    
-        // Load the root folder when the page loads
-        window.onload = () => {
-            loadFolder();
-        };
+
+        // Load the folder structure when the page loads
+        window.onload = loadFolderStructure;
     </script>
-    
-    
 </body>
 </html>

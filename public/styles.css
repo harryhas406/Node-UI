@@ -1,55 +1,153 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #121212; /* Darker background for dark mode */
     margin: 0;
-    padding: 20px;
+    /* padding: 20px; */
+    color: #e0e0e0; /* Light gray text for better contrast */
+    --background-color: #1e1e1e;
+    --text-color: #fff;
+    --line-color: #fff;
+    --button-background-color: #1669D3;
+    --button-hover-color: #1669D3;
+    --table-header-bg: #2C3E50;
+    --table-row-bg: rgba(255, 255, 255, 0.1);
+    --table-row-hover-bg: #333;    
+}
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5px;
 }
 
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 5px;
+    top: 5px;
+    box-sizing: border-box;
+}
+
+.logo {
+    width: 35px;
+    margin-right: 10px;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    z-index: 10;
+    /* margin-left: auto; */
+}
+
+.nav-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 16px;
+    z-index: 20;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--line-color);
+    margin: 0;
+}
+
+/* Center the search form */
+.form-container {
+    /* flex-grow: 1;
+    display: flex;
+    justify-content: right;
+    text-align: right;
+    top: 8px;
+    width: 50%;
+    padding: 5px; */
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px;
+}
+
+.form-container input[type="text"] {
+    padding: 5px;
+    font-size: 14px;
+    width: 200px;
+    border-radius: 6px;
+    box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
+}
+
+.form-container input[type="image"] {
+    width: 50px;
+    height: auto;
+    vertical-align: bottom;
+    /* padding: 8px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    background-color: var(--button-background-color);
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px; */
+}
 h1 {
     text-align: center;
-    color: #333;
+    color: #ffffff; /* White for headings */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Darker shadow for depth */
+    background-color: #1e1e1e; /* Dark table background */
 }
 
 table th, table td {
     padding: 12px 15px;
     text-align: left;
-    border: 1px solid #ddd;
+    border: 1px solid #333; /* Darker border for table cells */
 }
 
 table th {
-    background-color: #007BFF;
+    background-color: #007BFF; /* Keep the blue for table header */
     color: white;
     font-weight: bold;
 }
 
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #2a2a2a; /* Darker background for even rows */
 }
 
 table tr:hover {
-    background-color: #f1f1f1;
+    background-color: #444; /* Lighter gray for hover effect */
 }
 
 .alert-info {
-    color: #0066cc;
+    color: #66ccff; /* Lighter blue for alert info */
     font-size: 0.9em;
 }
 
 .is-india-related-true {
-    color: green;
+    color: #00ff00; /* Bright green for true state */
     font-weight: bold;
 }
 
 .is-india-related-false {
-    color: red;
+    color: #ff3300; /* Bright red for false state */
     font-weight: bold;
 }
 
@@ -58,7 +156,7 @@ table td:last-child {
 }
 
 iframe {
-    border: 2px solid black; /* Add a border to make it visible */
+    border: 2px solid #444; /* Darker border for iframe */
     display: block; /* Ensure it is not hidden */
     margin-top: 20px; /* Space above the iframe */
 }
