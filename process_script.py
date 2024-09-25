@@ -71,7 +71,7 @@ def add_resemble_score_to_csv(csv_file_path):
                 resemble_score = calculate_similarity_score(genuine_content, related_content)
                 # row['Resemble Score'] = round(resemble_score,3) # Round to 3 decimal places
                 resemble_score_percentage = round(resemble_score*100, 3)
-                row['Resemble Score'] = f"{resemble_score_percentage}"
+                row['Resemble Score'] = f"{resemble_score_percentage}%"
                 new_rows.append(row)
 
     # Write the new rows with the resemble_score column back to the CSV file
