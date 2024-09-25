@@ -1,0 +1,152 @@
+body {
+    --background-color: #1e1e1e;
+    --text-color: #fff;
+    --line-color: #fff;
+    --button-background-color: #1669D3;
+    --button-hover-color: #1669D3;
+    --table-header-bg: #2C3E50;
+    --table-row-bg: rgba(255, 255, 255, 0.1);
+    --table-row-hover-bg: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    overflow: hidden;
+}
+.background {
+    position: absolute;
+    top: 6%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/background.png') no-repeat center center;
+    /*background-size: cover;*/
+    background-size: contain; /* Ensures the image fits within the viewport */
+    opacity: 0.08;  /* 10% opacity */
+    z-index: -1;
+}
+.container {
+    position: relative;
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 5px;
+    overflow: auto;  /* Enable scrolling for the container */
+}
+.logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 55px; /* Adjust the logo size */
+}
+.head-image {
+    position: absolute;
+    top: 10px;
+    right: 175px;
+    width: 70px;
+    opacity:0.45;
+    box-shadow: 2px 5px 8px rgba(255, 255, 255, 0.6);
+}
+.head-text {
+    position: absolute;
+    top: 1px;
+    right: 10px;
+    font-size: 20px;
+    color:#1F618D;
+    width: 160px;
+    word-wrap: break-word;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3); /* Subtle shadow for depth */
+}
+.line {
+    position: absolute;
+    top: 90px;
+    width: 100%; /* 75% of the screen width */
+    height: 2px; /* Thickness of the line */
+    background-color: #1F618D; /* English Blue color */ 
+    /*background-color: var(--line-color);*/
+}
+.form-container {
+    position: absolute;
+    top: 20px;
+    right: 42%;
+    /*border: 1px solid white;*/
+    /*padding: 10px;
+    border-style: ridge;
+    border-color: grey;
+    box-shadow: 0px 4px 8px rgba(255,255, 255, 0.4);*/
+}
+.form-container input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    /*border-style: ridge;
+    border-color: grey;*/
+    width: 250px;
+    border-radius: 6px;
+    box-shadow: 2px 4px 6px rgba(255,255, 255, 0.5);
+}
+.form-container input[type="submit"] {
+    padding: 8px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    background-color: var(--button-background-color); /* Change submit button background in dark mode */
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.form-container input[type="submit"]:hover {
+    background-color: var(--button-hover-color);
+}
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 1px;
+    display: none;  /* Initially hidden */
+}
+.table-container {
+    margin-top: 180px; /* Adjusted margin to ensure table is positioned below the form */
+    padding: 10px;
+    max-height: 70vh; /* Set the maximum height of the scrollable area */
+    overflow-y: auto;  /* Enable vertical scroll */
+    width: 98%; /* Table takes 90% width */
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+th {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+td {
+    padding: 8px;
+    border: 1px solid white;
+    /*background-color: rgba(199, 245, 245, 0.25);*/
+    background-color: var(--table-row-bg);
+}
+tr:nth-child(even) {
+   /* background-color: #f2f2f2; */
+    background-color: var(--table-row-bg);
+}
+tr:hover {
+    /* background-color: #ddd; */
+    background-color: var(--table-row-hover-bg);
+}
+tr:nth-child(2) {
+    background-color: #ADD8E6; /* Light blue color */
+}

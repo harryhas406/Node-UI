@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the favicon
 app.get('/favicon.ico', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'favicon.ico'));
+    res.sendFile(path.join(__dirname, 'public', 'logo1.png'));
 });
 
 app.get('/', (req, res) => {
@@ -58,182 +58,8 @@ app.get('/phishing', (req, res) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CDOT Phishing Assessment</title>
-        <style>
-            body {
-                --background-color: #1e1e1e;
-                --text-color: #fff;
-                --line-color: #fff;
-                --button-background-color: #1669D3;
-                --button-hover-color: #1669D3;
-                --table-header-bg: #2C3E50;
-                --table-row-bg: rgba(255, 255, 255, 0.1);
-                --table-row-hover-bg: #333;
-                background-color: var(--background-color);
-                color: var(--text-color);
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                height: 100vh;
-                transition: background-color 0.5s ease, color 0.5s ease;
-                overflow: hidden;
-            }
-            .background {
-                position: absolute;
-                top: 12%;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: url('/background.png') no-repeat center center;
-                /*background-size: cover;*/
-                background-size: contain; /* Ensures the image fits within the viewport */
-                opacity: 0.08;  /* 10% opacity */
-                z-index: -1;
-            }
-            .container {
-                position: relative;
-                height: 75vh;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-start;
-                padding-top: 20px;
-                overflow: auto;  /* Enable scrolling for the container */
-            }
-            .logo {
-                position: absolute;
-                top: 30px;
-                left: 30px;
-                width: 45px; /* Adjust the logo size */
-            }
-            .head-image {
-                position: absolute;
-                top: 32px;
-                right: 175px;
-                width: 70px;
-                opacity:0.45;
-                box-shadow: 2px 6px 10px rgba(255, 255, 255, 0.6);
-            }
-            .head-text {
-                position: absolute;
-                top: 17px;
-                right: 10px;
-                font-size: 20px;
-                color:#1F618D;
-                width: 160px;
-                word-wrap: break-word;
-                text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.3); /* Subtle shadow for depth */
-            }
-            .line {
-                position: absolute;
-                top: 120px;
-                width: 100%; /* 75% of the screen width */
-                height: 2px; /* Thickness of the line */
-                background-color: #1F618D; /* English Blue color */ 
-                /*background-color: var(--line-color);*/
-            }
-            .form-container {
-                position: absolute;
-                top: 40px;
-                right: 42%;
-                /*border: 1px solid white;*/
-                /*padding: 10px;
-                border-style: ridge;
-                border-color: grey;
-                box-shadow: 0px 4px 8px rgba(255,255, 255, 0.4);*/
-            }
-            .form-container input[type="text"] {
-                padding: 10px;
-                font-size: 16px;
-                /*border-style: ridge;
-                border-color: grey;*/
-                width: 250px;
-                border-radius: 6px;
-                box-shadow: 4px 8px 12px rgba(255,255, 255, 0.5);
-            }
-            .form-container input[type="submit"] {
-                padding: 8px 10px;
-                font-size: 20px;
-                cursor: pointer;
-                color: var(--text-color);
-                background-color: var(--button-background-color); /* Change submit button background in dark mode */
-                border: none;
-                border-radius: 5px;
-                transition: background-color 0.3s ease;
-            }
-            .form-container input[type="submit"]:hover {
-                background-color: var(--button-hover-color);
-            }
-            .error-message {
-                color: red;
-                font-size: 14px;
-                margin-top: 1px;
-                display: none;  /* Initially hidden */
-            }
-            .table-container {
-                margin-top: 180px; /* Adjusted margin to ensure table is positioned below the form */
-                padding: 10px;
-                max-height: 70vh; /* Set the maximum height of the scrollable area */
-                overflow-y: auto;  /* Enable vertical scroll */
-                width: 98%; /* Table takes 90% width */
-                margin-left: auto;
-                margin-right: auto;
-                border-radius: 10px;
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 10px 0;
-            }
-            th {
-                padding: 10px;
-                background-color: #4CAF50;
-                color: white;
-                text-align: center;
-                position: sticky;
-                top: 0;
-                z-index: 1;
-            }
-            td {
-                padding: 8px;
-                border: 1px solid white;
-                /*background-color: rgba(199, 245, 245, 0.25);*/
-                background-color: var(--table-row-bg);
-            }
-            tr:nth-child(even) {
-               /* background-color: #f2f2f2; */
-                background-color: var(--table-row-bg);
-            }
-            tr:hover {
-                /* background-color: #ddd; */
-                background-color: var(--table-row-hover-bg);
-            }
-            tr:nth-child(2) {
-                background-color: #ADD8E6; /* Light blue color */
-            }
-
-        </style>
+        <link rel="stylesheet" href="/phishingStyle.css">
         <script>
-            function toggleTheme() {
-                const body = document.body;
-                const isDarkMode = body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-                updateButtonText(isDarkMode);
-            }
-
-            function updateButtonText(isDarkMode) {
-                const toggleButton = document.getElementById('theme-toggle-btn');
-                toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-            }
-
-            window.onload = function() {
-                const savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark') {
-                    document.body.classList.add('dark-mode');
-                }
-                updateButtonText(savedTheme === 'dark');
-            }
-
             function validateForm(event) {
                 const input = document.querySelector('input[name="input_string"]');
                 const errorMessage = document.getElementById('error-message');
@@ -250,7 +76,7 @@ app.get('/phishing', (req, res) => {
     <body>
         <div class="background"></div>
         <div class="container">
-            <a href="/"><img class="logo" src="/logo.png" alt="Logo"></a>
+            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <img class="head-image" src="/suspicious.png" alt="Logo">
             <h1 class="head-text">Comprehensive Phishing Assessment</h1>
             <div class="line"></div>
@@ -309,9 +135,11 @@ app.post('/submit', (req, res) => {
             })
             .on('data', (row) => {
                 tableHtml += '<tr>';
-                for (const key in row) {
-                    tableHtml += `<td>${row[key]}</td>`;
-                }
+                Object.keys(row).forEach(key => {
+                    // Check if the value contains multiple entries (IPs, etc.)
+                    const value = row[key].includes(';') ? row[key].split(';').join('<br>') : row[key];
+                    tableHtml += `<td>${value}</td>`;  // Insert <br> to break lines
+                });
                 tableHtml += '</tr>';
             })
             .on('end', () => {
@@ -329,7 +157,7 @@ app.post('/submit', (req, res) => {
                     <body>
                         <div class="background"></div>
                         <div class="container">
-                            <a href="/"><img class="logo" src="/logo.png" alt="logo"></a>
+                            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="logo"></a>
                             <h1 class="heading">Results for: ${inputString}</h1>
                             <div class="line"></div>
                             <div class="table-container">${tableHtml}</div>
@@ -489,14 +317,14 @@ app.get('/ransomware-posts', (req, res) => {
 
             // Sort posts in descending order by date (assuming UTC format)
             const sortedPosts = posts.sort((a, b) => {
-                const dateA = new Date(a.date).getTime();
-                const dateB = new Date(b.date).getTime();
+                const dateA = new Date(a.discovered).getTime();
+                const dateB = new Date(b.discovered).getTime();
 
                 return dateB - dateA;  // Descending order
             });
 
             // Limit to the latest 200 posts
-            const latestPosts = sortedPosts.slice(0, 200);
+            const latestPosts = sortedPosts.slice(0, 100);
 
             res.json(latestPosts);
         } catch (parseError) {
@@ -506,29 +334,29 @@ app.get('/ransomware-posts', (req, res) => {
     });
 });
 
-app.get('/files/:folderName', (req, res) => {
-    const bucketName = 'darkwebleaks'; // Your bucket name
-    const folderName = req.params.folderName || ''; // Folder path
+// app.get('/files/:folderName', (req, res) => {
+//     const bucketName = 'darkwebleaks'; // Your bucket name
+//     const folderName = req.params.folderName || ''; // Folder path
 
-    let files = [];
+//     let files = [];
 
-    const stream = minioClient.listObjectsV2(bucketName, folderName, true);
+//     const stream = minioClient.listObjectsV2(bucketName, folderName, true);
 
-    stream.on('data', (obj) => {
-        if (!obj.prefix) {
-            files.push(obj.name); // Collect file names
-        }
-    });
+//     stream.on('data', (obj) => {
+//         if (!obj.prefix) {
+//             files.push(obj.name); // Collect file names
+//         }
+//     });
 
-    stream.on('end', () => {
-        res.json(files); // Send the file list as JSON
-    });
+//     stream.on('end', () => {
+//         res.json(files); // Send the file list as JSON
+//     });
 
-    stream.on('error', (err) => {
-        console.error('Error listing files:', err);
-        res.status(500).json({ error: 'Error listing files' });
-    });
-});
+//     stream.on('error', (err) => {
+//         console.error('Error listing files:', err);
+//         res.status(500).json({ error: 'Error listing files' });
+//     });
+// });
 
 
 // Utility function to fetch files recursively

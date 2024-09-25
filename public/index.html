@@ -255,54 +255,54 @@
         }
 
         // Function to load darkweb files
-        function loadFiles() {
-            fetch('/minio-files')
-                .then(response => response.json())
-                .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
-                        let table = '<table><tr><th>File Name</th></tr>';
-                        data.forEach(file => {
-                            const fileNameWithoutExtension = file.replace(/\.[^/.]+$/, "");
-                            table += `<tr><td><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${fileNameWithoutExtension}</a></td></tr>`;
-                        });
-                        table += '</table>';
-                        document.getElementById('file-list').innerHTML = table;
-                    } else {
-                        document.getElementById('file-list').innerHTML = '<p>No files found.</p>';
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('file-list').innerHTML = `<p>Error loading files: ${error.message}</p>`;
-                });
-        }
+        // function loadFiles() {
+        //     fetch('/minio-files')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (Array.isArray(data) && data.length > 0) {
+        //                 let table = '<table><tr><th>File Name</th></tr>';
+        //                 data.forEach(file => {
+        //                     const fileNameWithoutExtension = file.replace(/\.[^/.]+$/, "");
+        //                     table += `<tr><td><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${fileNameWithoutExtension}</a></td></tr>`;
+        //                 });
+        //                 table += '</table>';
+        //                 document.getElementById('file-list').innerHTML = table;
+        //             } else {
+        //                 document.getElementById('file-list').innerHTML = '<p>No files found.</p>';
+        //             }
+        //         })
+        //         .catch(error => {
+        //             document.getElementById('file-list').innerHTML = `<p>Error loading files: ${error.message}</p>`;
+        //         });
+        // }
 
         // Function to load India-related alerts table format
-        function loadIndiaRelatedAlerts() {
-            fetch('/api/messages?isIndiaRelated=true')
-                .then(response => response.json())
-                .then(data => {
-                    if (Array.isArray(data) && data.length > 0) {
-                        let table = '<table><tr><th>Channel</th><th>Message</th><th>Timestamp</th></tr>';
-                        data.forEach(message => {
-                            const istTime = new Date(message._source.timestamp).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-                            table += `
-                                <tr>
-                                    <td>${message._source.channel}</td>
-                                    <td>${message._source.text}</td>
-                                    <td>${istTime}</td>
-                                </tr>
-                            `;
-                        });
-                        table += '</table>';
-                        document.getElementById('alerts-list').innerHTML = table;
-                    } else {
-                        document.getElementById('alerts-list').innerHTML = '<p>No alerts found.</p>';
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('alerts-list').innerHTML = `<p>Error loading alerts: ${error.message}</p>`;
-                });
-        }
+        // function loadIndiaRelatedAlerts() {
+        //     fetch('/api/messages?isIndiaRelated=true')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (Array.isArray(data) && data.length > 0) {
+        //                 let table = '<table><tr><th>Channel</th><th>Message</th><th>Timestamp</th></tr>';
+        //                 data.forEach(message => {
+        //                     const istTime = new Date(message._source.timestamp).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+        //                     table += `
+        //                         <tr>
+        //                             <td>${message._source.channel}</td>
+        //                             <td>${message._source.text}</td>
+        //                             <td>${istTime}</td>
+        //                         </tr>
+        //                     `;
+        //                 });
+        //                 table += '</table>';
+        //                 document.getElementById('alerts-list').innerHTML = table;
+        //             } else {
+        //                 document.getElementById('alerts-list').innerHTML = '<p>No alerts found.</p>';
+        //             }
+        //         })
+        //         .catch(error => {
+        //             document.getElementById('alerts-list').innerHTML = `<p>Error loading alerts: ${error.message}</p>`;
+        //         });
+        // }
 
         // Donut Chart using canvasjs for Social Media
         async function fetchChartData() {
@@ -317,14 +317,15 @@
                     }));
 
                     // Create the CanvasJS donut chart
-                    var chart = new CanvasJS.Chart("chartContainer", {
+                    var chart = new CanvasJS.Chart("socialMediaChartContainer", {
                         exportEnabled: true,
                         animationEnabled: true,
                         backgroundColor: "transparent", // Set background color to transparent
                         legend: {
                             cursor: "pointer",
                             itemclick: explodePie,
-                            fontColor: "#fff" // Set legend text color to white
+                            fontColor: "#fff", // Set legend text color to white
+                            fontSize: 11
                         },
                         data: [{
                             type: "doughnut",
@@ -341,7 +342,7 @@
                     });
                     chart.render();
                 } else {
-                    document.getElementById('chartContainer').innerHTML = 'No data to display';
+                    document.getElementById('socialMediaChartContainer').innerHTML = 'No data to display';
                 }
             } catch (error) {
                 console.error('Error fetching chart data:', error);
@@ -358,7 +359,7 @@
             e.chart.render();
         }
 
-        // Donut chart for darkweb files display using Canvasjs
+        // Donut chart for Darkweb files, display using Canvasjs
         async function fetchFolderCountData() {
             try {
                 const response = await fetch('/folder-count');  // Fetch the folder counts
@@ -376,14 +377,15 @@
                     console.log('Data Points:', dataPoints);
 
                     // Create the CanvasJS pie chart
-                    var chart = new CanvasJS.Chart("folder-pie-chart", {
+                    var chart = new CanvasJS.Chart("darkwebFolderChart", {
                         exportEnabled: true,
                         animationEnabled: true,
                         backgroundColor: "transparent",  // Transparent background
                         legend: {
                             cursor: "pointer",
                             itemclick: explodePie,
-                            fontColor: "#fff" // Set legend text color to white
+                            fontColor: "#fff", // Set legend text color to white
+                            fontSize: 11
                         },
                         data: [{
                             type: "doughnut",
@@ -407,11 +409,11 @@
                     // Render the chart
                     chart.render();
                 } else {
-                    document.getElementById('folder-pie-chart').innerHTML = 'No data to display';
+                    document.getElementById('darkwebFolderChart').innerHTML = 'No data to display';
                 }
             } catch (error) {
                 console.error('Error fetching folder count data:', error);
-                document.getElementById('folder-pie-chart').innerHTML = 'Error loading data';
+                document.getElementById('darkwebFolderChart').innerHTML = 'Error loading data';
             }
         }
 
@@ -438,10 +440,9 @@
             }
         }
 
-
         // Bar Graph for displaying phishing data using Canvasjs
         async function displayPhishingData() {
-            var chart = new CanvasJS.Chart("phishingData", {
+            var chart = new CanvasJS.Chart("phishingDataChart", {
                 exportEnabled: true,
                 animationEnabled: true,
                 backgroundColor: "transparent",  // Transparent background
@@ -483,58 +484,58 @@
         window.onload = function() {
             // loadFiles();  // Load MinIO files
             // loadIndiaRelatedAlerts();  // Load India-related alerts
-            fetchChartData();  // Load Pie Chart data
-            fetchFolderCountData();
-            displayPhishingData();
+            fetchChartData();  // Load Pie Chart data Fr
+            fetchFolderCountData(); // Load Darkweb files as Chart
+            displayPhishingData(); // Display Phishing Data as Chart
             fetchFiles();
         };
 
         // Union Search on the home page
-        function search(event) {
-            event.preventDefault();
+        // function search(event) {
+        //     event.preventDefault();
 
-            const formData = new FormData(event.target);
-            const keyword = formData.get('input_string');
+        //     const formData = new FormData(event.target);
+        //     const keyword = formData.get('input_string');
 
-            fetch('/api/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ input_string: keyword })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Clear previous results
-                document.getElementById('file-list').innerHTML = '';
-                document.getElementById('elastic-results').innerHTML = '';
+        //     fetch('/api/search', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ input_string: keyword })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         // Clear previous results
+        //         document.getElementById('file-list').innerHTML = '';
+        //         document.getElementById('elastic-results').innerHTML = '';
 
-                // Display darkweb files
-                if (data.minioFiles.length > 0) {
-                    let fileTable = '<table><tr><th>File Name</th></tr>';
-                    data.minioFiles.forEach(file => {
-                        fileTable += `<tr><td><a href="/fetch/${file}" target="_blank">${file}</a></td></tr>`;
-                    });
-                    fileTable += '</table>';
-                    document.getElementById('file-list').innerHTML = fileTable;
-                } else {
-                    document.getElementById('file-list').innerHTML = '<p>No MinIO files found.</p>';
-                }
+        //         // Display darkweb files
+        //         if (data.minioFiles.length > 0) {
+        //             let fileTable = '<table><tr><th>File Name</th></tr>';
+        //             data.minioFiles.forEach(file => {
+        //                 fileTable += `<tr><td><a href="/fetch/${file}" target="_blank">${file}</a></td></tr>`;
+        //             });
+        //             fileTable += '</table>';
+        //             document.getElementById('file-list').innerHTML = fileTable;
+        //         } else {
+        //             document.getElementById('file-list').innerHTML = '<p>No MinIO files found.</p>';
+        //         }
 
-                // Display Elasticsearch results
-                if (data.elasticsearchResults.length > 0) {
-                    let messageTable = '<table><tr><th>Channel</th><th>Message</th></tr>';
-                    data.elasticsearchResults.forEach(hit => {
-                        messageTable += `<tr><td>${hit._source.channel}</td><td>${hit._source.text}</td></tr>`;
-                    });
-                    messageTable += '</table>';
-                    document.getElementById('elastic-results').innerHTML = messageTable;
-                } else {
-                    document.getElementById('elastic-results').innerHTML = '<p>No messages found.</p>';
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
+        //         // Display Elasticsearch results
+        //         if (data.elasticsearchResults.length > 0) {
+        //             let messageTable = '<table><tr><th>Channel</th><th>Message</th></tr>';
+        //             data.elasticsearchResults.forEach(hit => {
+        //                 messageTable += `<tr><td>${hit._source.channel}</td><td>${hit._source.text}</td></tr>`;
+        //             });
+        //             messageTable += '</table>';
+        //             document.getElementById('elastic-results').innerHTML = messageTable;
+        //         } else {
+        //             document.getElementById('elastic-results').innerHTML = '<p>No messages found.</p>';
+        //         }
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        // }
 
     </script>
 </head>
@@ -543,8 +544,8 @@
     
     <div class="container">
         <div class="header-content">
-            <a href="/"><img class="logo" src="/logo1.png" alt="Logo"></a>
-            <!-- <h1 class="heading">CDOT Assessment</h1> -->
+            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+            <!-- <button class="menu-toggle" onclick="toggleSidebar()">☰</button> Hamburger icon -->
             <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
                 <input type="text" name="input_string" placeholder="Enter keyword to Search">
                 <input type="image" src="/searchlogo1.png" alt="submit">
@@ -559,6 +560,17 @@
         </div>
         <div class="line"></div>        
     </div>
+    <!-- Sidebar Navigation -->
+    <!-- <aside id="sidebar" class="sidebar">
+        <nav>
+            <ul>
+                <li><a href="/drkweb">DarkWeb</a></li>
+                <li><a href="/telegram">Hactivist_Terrorism</a></li>
+                <li><a href="/ransomware">RansomWare</a></li>
+                <li><a href="/phishing">Phishing</a></li>
+            </ul>
+        </nav>
+    </aside> -->
 
     <div class="content">
         <!-- Box 1 -->
@@ -573,7 +585,7 @@
                 </div>
     
                 <div class="chart-column">
-                    <div id="folder-pie-chart" style="height: 400px; background: transparent;">
+                    <div id="darkwebFolderChart" style="height: 400px; background: transparent;">
                         <!-- Pie chart will be rendered here -->
                     </div>
                 </div>
@@ -583,7 +595,7 @@
         <!-- Box 2 -->
         <div class="column">
             <h5>SOCIAL MEDIA</h5>
-            <div id="chartContainer" style="height: 400px; width: 100%; background: transparent;"></div> <!-- Chart will render here -->
+            <div id="socialMediaChartContainer" style="height: 400px; width: 100%; background: transparent;"></div> <!-- Chart will render here -->
         </div>
     
         <!-- Box 3 -->
@@ -596,7 +608,7 @@
         <!-- Box 4 -->
         <div class="column">
             <h5>PHISHING</h5>
-            <div id="phishingData" style="width: 100%; height: 370px; background: transparent;"></div>
+            <div id="phishingDataChart" style="width: 100%; height: 370px; background: transparent;"></div>
         </div>
     </div>
     
