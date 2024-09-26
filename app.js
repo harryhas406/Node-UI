@@ -291,7 +291,7 @@ app.get('/fetch/*', (req, res) => {
         dataStream.pipe(res);
     });
 });
-// Route to serve static HTML page for MinIO browser
+// Route to serve static HTML page for Darkweb browser
 app.get('/drkweb', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'darkweb.html'));
 });
@@ -334,29 +334,29 @@ app.get('/ransomware-posts', (req, res) => {
     });
 });
 
-// app.get('/files/:folderName', (req, res) => {
-//     const bucketName = 'darkwebleaks'; // Your bucket name
-//     const folderName = req.params.folderName || ''; // Folder path
+app.get('/files/:folderName', (req, res) => {
+    const bucketName = 'darkwebleaks'; // Your bucket name
+    const folderName = req.params.folderName || ''; // Folder path
 
-//     let files = [];
+    let files = [];
 
-//     const stream = minioClient.listObjectsV2(bucketName, folderName, true);
+    const stream = minioClient.listObjectsV2(bucketName, folderName, true);
 
-//     stream.on('data', (obj) => {
-//         if (!obj.prefix) {
-//             files.push(obj.name); // Collect file names
-//         }
-//     });
+    stream.on('data', (obj) => {
+        if (!obj.prefix) {
+            files.push(obj.name); // Collect file names
+        }
+    });
 
-//     stream.on('end', () => {
-//         res.json(files); // Send the file list as JSON
-//     });
+    stream.on('end', () => {
+        res.json(files); // Send the file list as JSON
+    });
 
-//     stream.on('error', (err) => {
-//         console.error('Error listing files:', err);
-//         res.status(500).json({ error: 'Error listing files' });
-//     });
-// });
+    stream.on('error', (err) => {
+        console.error('Error listing files:', err);
+        res.status(500).json({ error: 'Error listing files' });
+    });
+});
 
 
 // Utility function to fetch files recursively
@@ -488,6 +488,64 @@ app.get('/folder-count', async (req, res) => {
         console.error('Error fetching folder count:', error);
         res.status(500).json({ error: 'Failed to fetch folder counts' });
     }
+});
+
+// Serve the files page
+app.get('/files-page', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'files-page.html')); // Make sure the path is correct
+});
+
+
+
+// Route to Read Files and Send CSV Data to Frontend
+app.get('/csv-data', (req, res) => {
+    const folderPath = path.join(__dirname, 'dynamic'); // CSV folder path
+
+    fs.readdir(folderPath, (err, files) => {
+        if (err) {
+            return res.status(500).send('Unable to scan folder');
+        }
+
+        const allData = [];
+        let processedFiles = 0; // Track processed CSV files
+
+        // Filter to process only CSV files
+        const csvFiles = files.filter(file => path.extname(file) === '.csv');
+
+        if (csvFiles.length === 0) {
+            return res.json(allData); // Return empty array if no CSV files found
+        }
+
+        csvFiles.forEach((file) => {
+            const domainName = path.basename(file).replace('phishoutput_', '').replace('.csv', '');
+            const filePath = path.join(folderPath, file);
+
+            const data = { domain: domainName, phishingDomains: [] };
+
+            fs.createReadStream(filePath)
+                .pipe(csv())
+                .on('data', (row) => {
+                    // Assuming phishing domains start from the 3rd entry (first two are headers/original domain)
+                    data.phishingDomains.push(row);
+                })
+                .on('end', () => {
+                    allData.push(data); // Push data once the stream for this file ends
+                    processedFiles++; // Increment processed file count
+
+                    // When all files are processed, send the response
+                    if (processedFiles === csvFiles.length) {
+                        res.json(allData); // Send all CSV data to frontend once done
+                    }
+                })
+                .on('error', (error) => {
+                    console.error(`Error processing file ${file}:`, error);
+                    processedFiles++; // Still increment to avoid hanging
+                    if (processedFiles === csvFiles.length) {
+                        res.json(allData); // Send partial data if an error occurs
+                    }
+                });
+        });
+    });
 });
 
 // Start the server

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files in Folder</title>
+    <script>
+        async function fetchFiles(folderName) {
+            try {
+                const response = await fetch(`/files/${folderName}`); // Fetch files from the specified folder
+                const files = await response.json();
+
+                if (files.length > 0) {
+                    let fileLinks = '';
+                    files.forEach(file => {
+                        fileLinks += `<li><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${file}</a></li>`;
+                    });
+                    document.getElementById('file-list').innerHTML = `<ul>${fileLinks}</ul>`; // Display the files
+                } else {
+                    document.getElementById('file-list').innerHTML = 'No files found in this folder.';
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                document.getElementById('file-list').innerHTML = 'Error loading files.';
+            }
+        }
+
+        window.onload = function() {
+            // Get the folder name from the URL
+            const params = new URLSearchParams(window.location.search);
+            const folderName = params.get('folderName');
+
+            if (folderName) {
+                fetchFiles(folderName); // Fetch files for this folder
+            } else {
+                document.getElementById('file-list').innerHTML = 'No folder specified.';
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>Files in Folder: <span id="folder-name"></span></h1>
+    <div id="file-list">
+        <!-- File list will be populated here -->
+    </div>
+</body>
+</html>

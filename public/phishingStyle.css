@@ -1,3 +1,23 @@
+/* For Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+    width: 4px; /* Set the width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #1e1e1e;  /* Track background */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scroll handle (thumb) */
+    border-radius: 10px; /* Make the scroll handle rounded */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color when hovering over the scroll handle */
+}
 body {
     --background-color: #1e1e1e;
     --text-color: #fff;
@@ -15,6 +35,8 @@ body {
     height: 100vh;
     transition: background-color 0.5s ease, color 0.5s ease;
     overflow: hidden;
+    scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
+    scrollbar-color: #888 #1e1e1e; /* thumb color and track color for firefox only */
 }
 .background {
     position: absolute;
