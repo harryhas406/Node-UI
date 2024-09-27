@@ -18,6 +18,7 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555; /* Darker color when hovering over the scroll handle */
 }
+/*
 body {
     --background-color: #1e1e1e;
     --text-color: #fff;
@@ -35,9 +36,41 @@ body {
     height: 100vh;
     transition: background-color 0.5s ease, color 0.5s ease;
     overflow: hidden;
-    scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
-    scrollbar-color: #888 #1e1e1e; /* thumb color and track color for firefox only */
 }
+*/
+
+/* Define default colors for light mode */
+:root {
+    --background-color: #f5f5f5;
+    --text-color: #000;
+    --line-color: #1F618D;
+    --button-background-color: #1669D3;
+    --button-hover-color: #1F618D;
+    --table-header-bg: #4CAF50;
+    --table-row-bg: rgba(199, 245, 245, 0.25);
+    --table-row-hover-bg: #ddd;
+}
+/* Dark mode styles */
+body.dark-mode {
+    --background-color: #1e1e1e;
+    --text-color: #fff;
+    --line-color: #fff; /* Change line color in dark mode */
+    --button-background-color: #1669D3;
+    --button-hover-color: #1669D3;
+    --table-header-bg: #2C3E50;
+    --table-row-bg: rgba(255, 255, 255, 0.1);
+    --table-row-hover-bg: #333;
+}
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 200vh;
+    overflow: hidden;  /* Prevent body scroll */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}    
 .background {
     position: absolute;
     top: 6%;
@@ -52,7 +85,7 @@ body {
 }
 .container {
     position: relative;
-    height: 75vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -131,11 +164,10 @@ body {
     display: none;  /* Initially hidden */
 }
 .table-container {
-    margin-top: 180px; /* Adjusted margin to ensure table is positioned below the form */
-    padding: 10px;
-    max-height: 70vh; /* Set the maximum height of the scrollable area */
+    /* margin-top: 180px; */ /* Adjusted margin to ensure table is positioned below the form */
+    max-height: 120vh; /* Set the maximum height of the scrollable area */
     overflow-y: auto;  /* Enable vertical scroll */
-    width: 98%; /* Table takes 90% width */
+    width: 99%; /* Table takes 90% width */
     margin-left: auto;
     margin-right: auto;
     border-radius: 10px;
@@ -153,10 +185,10 @@ th {
     text-align: center;
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 2;
 }
 td {
-    padding: 8px;
+    padding: 5px;
     border: 1px solid white;
     /*background-color: rgba(199, 245, 245, 0.25);*/
     background-color: var(--table-row-bg);
@@ -171,4 +203,32 @@ tr:hover {
 }
 tr:nth-child(2) {
     background-color: #ADD8E6; /* Light blue color */
+    color: #000; 
+    /*color: var(--text-color);*/ /* Ensure form text color changes */
+}
+.results-heading {
+    margin-top: 100px;
+    /* margin-bottom: 8px; */
+    text-align: left;  /* Align text to the left */
+    width: 100%;       /* Ensure it takes the full width */
+    padding-left: 10px; /* Optional: Add some left padding for spacing */
+    color: #0970b5;
+}
+.theme-toggle {
+    position: absolute;
+    top: 105px;
+    right: 10px;
+    background-color: var(--button-background-color);
+    /* color: white; */
+    color: var(--text-color);
+    border: none;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--button-hover-color);
 }

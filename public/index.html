@@ -463,6 +463,71 @@
             }
         }
 
+        //Ashish
+        // Bar Graph for displaying phishing data using Canvasjs
+        async function displayPhishingData() {
+            try {
+                // Fetch the phishing data from the backend
+                const response = await fetch("/get_phishing_data");
+                const phishingData = await response.json();
+
+                // Process the phishing data into dataPoints for the chart
+                const dataPoints = phishingData.map(item => ({
+                    y: item.entries,
+                    label: item.domain  // Use the domain from the file name as the label
+                }));
+
+                // Create the chart
+                var chart = new CanvasJS.Chart("phishingDataChart", {
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    backgroundColor: "transparent",
+                    legend: {
+                        cursor: "pointer",
+                        itemclick: explodePie,
+                        fontColor: "#fff",
+                        fontSize: 10
+                    },
+                    axisY: {
+                        title: "Phishing Entries",
+                        fontColor: "#fff",
+                        labelFontColor: "#fff"
+                    },
+                    axisX: {
+                        title: "Domain",
+                        fontColor: "#fff",
+                        labelFontColor: "#fff",
+                        interval: 1, // Force every label to display
+                        labelAngle: 15, // Rotate labels to avoid overlapping
+                    },
+                    data: [{
+                        type: "column",
+                        showInLegend: true,
+                        legendMarkerColor: "#fff",
+                        legendText: "Domain",
+                        dataPoints: dataPoints
+                    }]
+                });
+
+                chart.render();
+
+                // Add hover effect to enhance visibility
+                const bars = document.querySelectorAll(".canvasjs-chart-canvas rect");
+                bars.forEach(bar => {
+                    bar.addEventListener("mouseover", () => {
+                            bar.style.fill = "#FFD700";  // Gold color on hover
+                        });
+                        bar.addEventListener("mouseout", () => {
+                            bar.style.fill = "#4CAF50";  // Original color
+                        });
+                    });
+
+
+            } catch (error) {
+                console.error("Error fetching phishing data:", error);
+            }
+        }
+
         // Bar Graph for displaying phishing data using Canvasjs
         // async function displayPhishingData() {
         //     var chart = new CanvasJS.Chart("phishingDataChart", {
@@ -503,64 +568,6 @@
         //     chart.render();
         // }
 
-        // Fetch CSV data from the server
-        async function fetchCSVData() {
-            const response = await fetch('/csv-data'); // Fetch the CSV data from the server
-            const data = await response.json();
-            return data;
-        }
-
-        // Create Bar Chart using Chart.js
-        function createComparisonChart(csvData) {
-            const ctx = document.getElementById('phishingDataChart').getContext('2d');
-
-            const labels = []; // X-axis: phishing domains
-            const datasets = []; // Y-axis: bar datasets for each domain
-
-            // Prepare datasets
-            csvData.forEach(({ domain, phishingDomains }) => {
-                // Add phishing domains to labels if not already present
-                phishingDomains.forEach((phishDomain) => {
-                    if (!labels.includes(phishDomain.Domain)) {
-                        labels.push(phishDomain.Domain);
-                    }
-                });
-
-                // Create dataset for each domain
-                const dataset = {
-                    label: domain, // The domain name from the CSV file
-                    data: phishingDomains.map(() => 1), // Represent presence of phishing domains with value 1
-                    backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`,
-                    borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
-                    borderWidth: 1
-                };
-
-                datasets.push(dataset);
-            });
-
-            // Create the chart
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels, // X-axis: phishing domains
-                    datasets: datasets // Y-axis: different bars for each domain
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                    }
-                }
-            });
-        }
-
         // Combine both functions under a single window.onload event
         window.onload = async function() {
             // loadFiles();  // Load MinIO files
@@ -569,12 +576,6 @@
             fetchFolderCountData(); // Load Darkweb files as Chart
             displayPhishingData(); // Display Phishing Data as Chart
             // fetchFiles();
-            // try {
-            //     const csvData = await fetchCSVData(); // Fetch the CSV data
-            //     createComparisonChart(csvData); // Create the chart with fetched data
-            // } catch (error) {
-            //     console.error("Error loading CSV data:", error);
-            // }
         };
 
         // Union Search on the home page
@@ -623,69 +624,6 @@
         //     })
         //     .catch(error => console.error('Error:', error));
         // }
-        // Fetch CSV data
-        // async function fetchCSVData() {
-        //     const response = await fetch('/csv-data'); // Assumes backend route to fetch CSV data
-        //     const data = await response.json();
-        //     return data;
-        // }
-
-        // // Create Bar Chart
-        // function createComparisonChart(csvData) {
-        //     const ctx = document.getElementById('phishingDataChart').getContext('2d');
-
-        //     const labels = []; // X-axis: phishing domains
-        //     const datasets = []; // Y-axis: bar datasets for each domain
-
-        //     // Prepare datasets
-        //     csvData.forEach(({ domain, phishingDomains }) => {
-        //         // Add phishing domains to labels if not already present
-        //         phishingDomains.forEach((phishDomain) => {
-        //             if (!labels.includes(phishDomain.Domain)) {
-        //                 labels.push(phishDomain.Domain);
-        //             }
-        //         });
-
-        //         // Create dataset for each domain
-        //         const dataset = {
-        //             label: domain, // The domain name from the CSV file
-        //             data: phishingDomains.map(() => 1), // Represent presence of phishing domains with value 1
-        //             backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`,
-        //             borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
-        //             borderWidth: 1
-        //         };
-
-        //         datasets.push(dataset);
-        //     });
-
-        //     // Create the chart
-        //     new Chart(ctx, {
-        //         type: 'bar',
-        //         data: {
-        //             labels: labels, // X-axis: phishing domains
-        //             datasets: datasets // Y-axis: different bars for each domain
-        //         },
-        //         options: {
-        //             scales: {
-        //                 y: {
-        //                     beginAtZero: true
-        //                 }
-        //             },
-        //             responsive: true,
-        //             plugins: {
-        //                 legend: {
-        //                     position: 'top'
-        //                 },
-        //             }
-        //         }
-        //     });
-        // }
-
-        // // Wait for the DOM to load
-        // document.addEventListener('DOMContentLoaded', async () => {
-        //     const csvData = await fetchCSVData();
-        //     createComparisonChart(csvData); // Call to create the bar chart
-        // });
 
     </script>
 </head>
@@ -696,11 +634,11 @@
         <div class="header-content">
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <!-- <button class="menu-toggle" onclick="toggleSidebar()">☰</button> Hamburger icon -->
-            <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
+            <!-- <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
                 <input type="text" name="input_string" placeholder="Enter keyword to Search">
                 <input type="image" src="/searchlogo1.png" alt="submit">
                 <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
-            </form>
+            </form> -->
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
                 <a href="/telegram">Hactivist_Terrorism</a>

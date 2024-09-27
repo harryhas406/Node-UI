@@ -5,43 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Darkweb Files</title>
     <style>
-        /* For Chrome, Safari, and Edge */
+        /* Scrollbar styling */
         ::-webkit-scrollbar {
-            width: 4px; /* Set the width of the scrollbar */
+            width: 2px;
         }
-
-        /* Track */
         ::-webkit-scrollbar-track {
-            background: #1e1e1e;  /* Track background */
+            background: #1e1e1e;
         }
-
-        /* Handle */
         ::-webkit-scrollbar-thumb {
-            background: #888; /* Color of the scroll handle (thumb) */
-            border-radius: 10px; /* Make the scroll handle rounded */
+            background: #888;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
 
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Darker color when hovering over the scroll handle */
-        }
         body {
             font-family: Arial, sans-serif;
-            background-color: #121212; /* Dark background for dark mode */
-            color: #e0e0e0; /* Light gray text for better contrast */
+            background-color: #121212;
+            color: #e0e0e0;
             margin: 0;
             padding: 0;
-            scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
-            scrollbar-color: #888 #1e1e1e; /* thumb color and track color for firefox only */
-            --background-color: #1e1e1e;
-            --text-color: #fff;
-            --line-color: #fff;
-            --button-background-color: #1669D3;
-            --button-hover-color: #1669D3;
-            --table-header-bg: #2C3E50;
-            --table-row-bg: rgba(255, 255, 255, 0.1);
-            --table-row-hover-bg: #333;
         }
+
         .container {
             position: relative;
             display: flex;
@@ -56,39 +42,27 @@
             justify-content: space-between;
             width: 100%;
             padding: 5px;
-            top: 5px;
-            box-sizing: border-box;
         }
 
         .logo {
             width: 35px;
-            margin-right: 10px;
+            margin-top: 5px;
+            margin-left: 5px;
+            margin-top: 0px;
         }
-
-        /* .heading {
-            color: #1669D3;
-            font-size: 30px;
-            font-weight: bold;
-            margin: 0;
-            word-wrap: break-word;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
-        } */
 
         .nav-links {
             display: flex;
             justify-content: center;
             margin: 0 auto;
             width: 100%;
-            z-index: 10;
-            /* margin-left: auto; */
         }
 
         .nav-links a {
             margin: 0 10px;
             text-decoration: none;
-            color: var(--text-color);
+            color: #fff;
             font-size: 16px;
-            z-index: 20;
         }
 
         .nav-links a:hover {
@@ -98,26 +72,17 @@
         .line {
             width: 100%;
             height: 2px;
-            background-color: var(--line-color);
+            background-color: #fff;
             margin: 0;
         }
 
-        /* Center the search form */
         .form-container {
-            /* flex-grow: 1;
-            display: flex;
-            justify-content: right;
-            text-align: right;
-            top: 8px;
-            width: 50%;
-            padding: 5px; */
             position: absolute;
             top: 8px;
             right: 10px;
             width: 50%;
             display: flex;
             justify-content: flex-end;
-            padding: 4px;
         }
 
         .form-container input[type="text"] {
@@ -125,109 +90,126 @@
             font-size: 14px;
             width: 200px;
             border-radius: 6px;
-            box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
+            box-shadow: 2px 4px 8px rgba(255, 255, 255, 0.5);
         }
 
         .form-container input[type="image"] {
             width: 50px;
             height: auto;
             vertical-align: bottom;
-            /* padding: 8px 10px;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-color);
-            background-color: var(--button-background-color);
-            border: none;
-            border-radius: 5px;
-            margin-left: 10px; */
         }
-    
+
         h1 {
             text-align: center;
             margin-top: 20px;
-            color: #ffffff; /* White for headings */
+            color: #ffffff;
         }
-    
+
         #file-list {
-            max-width: 800px;
+            max-width: 60%;
             margin: 20px auto;
-            background: #1e1e1e; /* Darker background for the file list */
+            background: #1e1e1e;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Darker shadow for depth */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-    
+
+        .folder-container {
+            display: flex;
+            justify-content: center;
+            width: 100%; /* Ensure it takes the full width */
+            overflow-x: auto;
+            white-space: nowrap;
+            margin-top: 20px;
+        }
+
         .folder {
             font-weight: bold;
             font-size: 18px;
             padding: 10px;
             cursor: pointer;
-            border-bottom: 1px solid #444; /* Darker border for folders */
+            margin-right: 10px;
+            background-color: #333;
+            border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-    
+
         .folder:hover {
-            background-color: #333; /* Darker background on hover */
+            background-color: #444;
         }
-    
-        .file {
-            margin-left: 25px;
-            font-size: 16px;
-            padding: 5px;
-            transition: color 0.3s ease;
+
+        .table-container {
+            margin-top: 20px;
         }
-    
-        .file a {
-            color: #66b3ff; /* Light blue for links */
-            text-decoration: none;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-    
-        .file a:hover {
-            color: #0094ff; /* Brighter blue on hover */
-            text-decoration: underline;
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #444;
         }
-    
-        .folder-container {
-            margin-left: 20px;
-            display: none;  /* Initially hidden */
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+
+        table th {
+            background-color: #2C3E50;
+            color: #fff;
         }
-    
-        .expand-icon {
-            margin-right: 10px;
-            transition: transform 0.3s ease;
+
+        table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-    
-        .rotate {
-            transform: rotate(90deg);
+
+        table tr:hover {
+            background-color: #333;
         }
-    
-        /* Smooth animations */
-        @keyframes slideIn {
-            from {
-                max-height: 0;
-            }
-            to {
-                max-height: 1000px;
-            }
+        a:link {
+        color: rgb(221, 209, 209);
+        background-color: transparent;
+        text-decoration: none;
         }
-    
-        @keyframes slideOut {
-            from {
-                max-height: 1000px;
-            }
-            to {
-                max-height: 0;
-            }
+        .no-files {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+        }
+
+        /* Modal styles */
+        #image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-image {
+            max-width: 95%;
+            max-height: 95%;
+            margin: auto;
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
         }
     </style>    
 </head>
 <body>
-    <div class="container"></div>
+    <div class="container">
         <div class="header-content">
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
-            <!-- <h1 class="heading">CDOT Assessment</h1> -->
             <form class="form-container" action="/" method="post" onsubmit="search(event)">
                 <input type="text" name="input_string" placeholder="Enter keyword to Search">
                 <input type="image" src="/searchlogo1.png" alt="submit">
@@ -239,70 +221,144 @@
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
-        <div class="line"></div>        
+        <div class="line"></div>
     </div>
+    
     <h1>DarkWeb Leak File Explorer</h1>
 
-    <div id="file-list">
-        <p>Loading...</p>
+    <div class="folder-container" id="folder-container">
+        <!-- Folder names will appear here -->
+    </div>
+
+    <div id="file-list"></div>
+
+    <!-- Modal for displaying images -->
+    <div id="image-modal">
+        <span id="close-modal">&times;</span>
+        <img id="modal-image" src="" alt="File Image">
     </div>
 
     <script>
-        // Function to toggle folder visibility with animation
-        function toggleFolder(folderId, iconId) {
-            const folderContainer = document.getElementById(folderId);
-            const icon = document.getElementById(iconId);
-
-            if (folderContainer.style.display === 'none') {
-                folderContainer.style.display = 'block';
-                icon.classList.add('rotate');  // Rotate the icon on expand
-                folderContainer.style.animation = 'slideIn 0.3s ease-out';
-            } else {
-                icon.classList.remove('rotate');  // Remove rotation on collapse
-                folderContainer.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => {
-                    folderContainer.style.display = 'none';
-                }, 300);  // Wait for animation to complete before hiding
-            }
-        }
-
-        // Function to load folder structure
+        // Function to load folder structure and display folder names horizontally
         function loadFolderStructure() {
             fetch('/list')
                 .then(response => response.json())
                 .then(data => {
-                    let html = '';
-                    
-                    // Loop through each folder in the structure
-                    let folderIndex = 0;
-                    for (const [folder, files] of Object.entries(data)) {
-                        const folderId = `folder-${folderIndex}`;
-                        const iconId = `icon-${folderIndex}`;
+                    const folderContainer = document.getElementById('folder-container');
+                    let folderHtml = '';
 
-                        // Display folder name with a clickable icon
-                        html += `<div class="folder" onclick="toggleFolder('${folderId}', '${iconId}')">
-                                    <span id="${iconId}" class="expand-icon">▶</span>${folder}
-                                 </div>`;
-                        html += `<div id="${folderId}" class="folder-container">`;
-
-                        // List files inside this folder
-                        files.forEach(file => {
-                            html += `<div class="file"><a href="/fetch/${encodeURIComponent(folder)}/${encodeURIComponent(file)}" target="_blank">${file}</a></div>`;
-                        });
-
-                        html += '</div>';
-                        folderIndex++;
+                    // Loop through folders and display names horizontally
+                    for (const folder in data) {
+                        folderHtml += `<div class="folder" onclick="showFiles('${folder}')">${folder}</div>`;
                     }
 
-                    document.getElementById('file-list').innerHTML = html;
+                    folderContainer.innerHTML = folderHtml;
                 })
                 .catch(error => {
                     document.getElementById('file-list').innerHTML = `<p>Error loading data: ${error.message}</p>`;
                 });
         }
 
-        // Load the folder structure when the page loads
+        // Function to display files in a table when a folder is clicked
+        async function showFiles(folderName) {
+            try {
+                const response = await fetch(`/files/${folderName}`);
+                const files = await response.json();
+    
+                if (Array.isArray(files) && files.length > 0) {
+                    let tableRows = '';
+                    files.forEach(file => {
+                        const fileNameWithDetails = file.split('/').pop();
+                        const underscoreIndex = fileNameWithDetails.lastIndexOf('_');
+    
+                        if (underscoreIndex !== -1) {
+                            const discoveredDateWithType = fileNameWithDetails.substring(underscoreIndex + 1);
+                            const fileName = fileNameWithDetails.substring(0, underscoreIndex);
+                            
+                            const discoveredDate = discoveredDateWithType.split('.')[0];
+                            const fileType = discoveredDateWithType.split('.').pop().toUpperCase();
+    
+                            const icon = fileType === 'PNG' ? 'fa-file-image' : (fileType === 'CSV' ? 'fa-file-csv' : 'fa-file');
+                            tableRows += `
+                            <tr>
+                                <td><i class="fas ${icon}"></i><a href="${isImageFile(fileType) ? 'javascript:void(0);' : `/fetch/${encodeURIComponent(file)}`}" ${isImageFile(fileType) ? `onclick="openModal('/fetch/${encodeURIComponent(file)}')"` : ''}>${fileName}</a></td>
+                                <td>${formatDate(discoveredDate)}</td>
+                                <td>${fileType}</td>
+                            </tr>`;
+                        } else {
+                            const fileType = fileNameWithDetails.split('.').pop().toUpperCase();
+                            const fileName = fileNameWithDetails;
+    
+                            const icon = fileType === 'PNG' ? 'fa-file-image' : (fileType === 'CSV' ? 'fa-file-csv' : 'fa-file');
+                            tableRows += `
+                            <tr>
+                                <td><i class="fas ${icon}"></i><a href="${isImageFile(fileType) ? 'javascript:void(0);' : `/fetch/${encodeURIComponent(file)}`}" ${isImageFile(fileType) ? `onclick="openModal('/fetch/${encodeURIComponent(file)}')"` : ''}>${fileName}</a></td>
+                                <td>N/A</td>
+                                <td>${fileType}</td>
+                            </tr>`;
+                        }
+                    });
+    
+                    const tableHtml = `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Discovered Date</th>
+                                        <th>File Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRows}
+                                </tbody>
+                            </table>
+                        </div>`;
+    
+                    document.getElementById('file-list').innerHTML = tableHtml;
+                } else {
+                    document.getElementById('file-list').innerHTML = `<p class="no-files">No files available in this folder.</p>`;
+                }
+            } catch (error) {
+                document.getElementById('file-list').innerHTML = `<p>Error fetching files: ${error.message}</p>`;
+            }
+        }
+
+        // Helper functions to open and close the image modal
+        function openModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = imageSrc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('close-modal').onclick = closeModal;
+
+        // Helper function to determine if the file is an image
+        function isImageFile(fileType) {
+            return fileType === 'PNG' || fileType === 'JPG' || fileType === 'JPEG' || fileType === 'GIF';
+        }
+
+        // Function to format the discovered date
+        function formatDate(dateString) {
+            if (dateString.length === 8) {
+                const year = dateString.substring(0, 4);
+                const month = dateString.substring(4, 6);
+                const day = dateString.substring(6, 8);
+                return `${day}-${month}-${year}`; // Flip the date order to DD-MM-YYYY
+            }
+            return dateString; // Return as-is if not in expected format
+        }
+
+        // Load folder structure on page load
         window.onload = loadFolderStructure;
     </script>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
