@@ -60,22 +60,43 @@ app.get('/phishing', (req, res) => {
         <title>CDOT Phishing Assessment</title>
         <link rel="stylesheet" href="/phishingStyle.css">
         <script>
-            function validateForm(event) {
-                const input = document.querySelector('input[name="input_string"]');
-                const errorMessage = document.getElementById('error-message');
-                
-                if (input.value.trim() === "") {
-                    event.preventDefault();
-                    errorMessage.style.display = 'block';
-                } else {
-                    errorMessage.style.display = 'none';
-                }
-            }
-        </script>
+                    function toggleTheme() {
+                        const body = document.body;
+                        const isDarkMode = body.classList.toggle('dark-mode');
+                        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                        updateButtonText(isDarkMode);
+                    }
+
+                    function updateButtonText(isDarkMode) {
+                        const toggleButton = document.getElementById('theme-toggle-btn');
+                        toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+                    }
+
+                    window.onload = function() {
+                        const savedTheme = localStorage.getItem('theme');
+                        if (savedTheme === 'dark') {
+                            document.body.classList.add('dark-mode');
+                        }
+                        updateButtonText(savedTheme === 'dark');
+                    };
+
+                    function validateForm(event) {
+                        const input = document.querySelector('input[name="input_string"]');
+                        const errorMessage = document.getElementById('error-message');
+                        
+                        if (input.value.trim() === "") {
+                            event.preventDefault();
+                            errorMessage.style.display = 'block';
+                        } else {
+                            errorMessage.style.display = 'none';
+                        }
+                    }
+                </script>
     </head>
     <body>
         <div class="background"></div>
         <div class="container">
+            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <img class="head-image" src="/suspicious.png" alt="Logo">
             <h1 class="head-text">Comprehensive Phishing Assessment</h1>
@@ -115,9 +136,70 @@ app.post('/submit', (req, res) => {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>No Record Found</title>
+                <link rel="stylesheet" href="/phishingStyle.css">
+                <script>
+                    function validateForm(event) {
+                        const input = document.querySelector('input[name="input_string"]');
+                        const errorMessage = document.getElementById('error-message');
+                        
+                        if (input.value.trim() === "") {
+                            event.preventDefault();
+                            errorMessage.style.display = 'block';
+                        } else {
+                            errorMessage.style.display = 'none';
+                        }
+                    }
+                </script>
+
+                <script>
+                    function toggleTheme() {
+                        const body = document.body;
+                        const isDarkMode = body.classList.toggle('dark-mode');
+                        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                        updateButtonText(isDarkMode);
+                    }
+
+                    function updateButtonText(isDarkMode) {
+                        const toggleButton = document.getElementById('theme-toggle-btn');
+                        toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+                    }
+
+                    window.onload = function() {
+                        const savedTheme = localStorage.getItem('theme');
+                        if (savedTheme === 'dark') {
+                            document.body.classList.add('dark-mode');
+                        }
+                        updateButtonText(savedTheme === 'dark');
+                    };
+
+                    function validateForm(event) {
+                        const input = document.querySelector('input[name="input_string"]');
+                        const errorMessage = document.getElementById('error-message');
+                        
+                        if (input.value.trim() === "") {
+                            event.preventDefault();
+                            errorMessage.style.display = 'block';
+                        } else {
+                            errorMessage.style.display = 'none';
+                        }
+                    }
+                </script>
             </head>
             <body>
-                <h1>No Record Found for: ${inputString}</h1>
+                <div class="background"></div>
+                <div class="container">
+                    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
+                    <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                    <img class="head-image" src="/suspicious.png" alt="Suspicious">
+                    <h1 class="head-text">Comprehensive Phishing Assessment</h1>
+                    <div class="line"></div>
+                    <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+                        <input type="text" name="input_string" placeholder="Enter Domain here">
+                        <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
+                        <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+                    </form>
+                    <h2 class="results-heading">No Record Found for: ${inputString}</h2>
+                </div>
             </body>
             </html>
             `);
@@ -152,15 +234,72 @@ app.post('/submit', (req, res) => {
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <title>Phishing Assessment Result</title>
-                        <link rel="stylesheet" href="/submitstyle.css">
+                        <link rel="stylesheet" href="/phishingStyle.css">
+                        <script>
+                            function validateForm(event) {
+                                const input = document.querySelector('input[name="input_string"]');
+                                const errorMessage = document.getElementById('error-message');
+                                
+                                if (input.value.trim() === "") {
+                                    event.preventDefault();
+                                    errorMessage.style.display = 'block';
+                                } else {
+                                    errorMessage.style.display = 'none';
+                                }
+                            }
+                        </script>
+
+                        <script>
+                            function toggleTheme() {
+                                const body = document.body;
+                                const isDarkMode = body.classList.toggle('dark-mode');
+                                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                                updateButtonText(isDarkMode);
+                            }
+
+                            function updateButtonText(isDarkMode) {
+                                const toggleButton = document.getElementById('theme-toggle-btn');
+                                toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+                            }
+
+                            window.onload = function() {
+                                const savedTheme = localStorage.getItem('theme');
+                                if (savedTheme === 'dark') {
+                                    document.body.classList.add('dark-mode');
+                                }
+                                updateButtonText(savedTheme === 'dark');
+                            };
+
+                            function validateForm(event) {
+                                const input = document.querySelector('input[name="input_string"]');
+                                const errorMessage = document.getElementById('error-message');
+                                
+                                if (input.value.trim() === "") {
+                                    event.preventDefault();
+                                    errorMessage.style.display = 'block';
+                                } else {
+                                    errorMessage.style.display = 'none';
+                                }
+                            }
+                        </script>
                     </head>
                     <body>
                         <div class="background"></div>
                         <div class="container">
-                            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="logo"></a>
-                            <h1 class="heading">Results for: ${inputString}</h1>
+                            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
+                            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                            <img class="head-image" src="/suspicious.png" alt="Suspicious">
+                            <h1 class="head-text">Comprehensive Phishing Assessment</h1>
                             <div class="line"></div>
-                            <div class="table-container">${tableHtml}</div>
+                            <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+                                <input type="text" name="input_string" placeholder="Enter Domain here" value="${inputString}">
+                                <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
+                                <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+                            </form>
+                            <h2 class="results-heading">Results for: ${inputString}</h2>
+                            <div class="table-container">
+                                ${tableHtml}
+                            </div>
                         </div>
                     </body>
                     </html>
@@ -495,58 +634,114 @@ app.get('/files-page', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'files-page.html')); // Make sure the path is correct
 });
 
+// Displaying bar graph for phishing
+// Directory containing the CSV files
+const csvDirectory = path.join(__dirname, 'dynamic');
 
+// Function to get file modification times
+function getRecentCsvFiles(directory, limit = 15) {
+    // Read all files in the directory
+    const files = fs.readdirSync(directory)
+        .filter(file => file.endsWith('.csv'))
+        .map(file => {
+            const filePath = path.join(directory, file);
+            return {
+                file: file,
+                mtime: fs.statSync(filePath).mtime // Get last modified time
+            };
+        })
+        .sort((a, b) => b.mtime - a.mtime) // Sort by modification time (descending)
+        .slice(0, limit); // Get the most recent files
 
-// Route to Read Files and Send CSV Data to Frontend
-app.get('/csv-data', (req, res) => {
-    const folderPath = path.join(__dirname, 'dynamic'); // CSV folder path
+    return files.map(f => f.file);
+}
 
-    fs.readdir(folderPath, (err, files) => {
-        if (err) {
-            return res.status(500).send('Unable to scan folder');
-        }
+// Endpoint to get phishing data
+app.get('/get_phishing_data', (req, res) => {
+    const phishingData = [];
 
-        const allData = [];
-        let processedFiles = 0; // Track processed CSV files
+    // Get the 15 most recent CSV files
+    const recentCsvFiles = getRecentCsvFiles(csvDirectory, 15);
 
-        // Filter to process only CSV files
-        const csvFiles = files.filter(file => path.extname(file) === '.csv');
+    let fileCount = recentCsvFiles.length;
 
-        if (csvFiles.length === 0) {
-            return res.json(allData); // Return empty array if no CSV files found
-        }
+    recentCsvFiles.forEach(file => {
+        // Extract domain name from the file name
+        const domainName = file.replace('phishoutput_', '').replace('.csv', '');  // Extract the part after phishing_
 
-        csvFiles.forEach((file) => {
-            const domainName = path.basename(file).replace('phishoutput_', '').replace('.csv', '');
-            const filePath = path.join(folderPath, file);
+        // Count the number of entries in the CSV file
+        const filePath = path.join(csvDirectory, file);
+        let entryCount = 0;
 
-            const data = { domain: domainName, phishingDomains: [] };
-
-            fs.createReadStream(filePath)
-                .pipe(csv())
-                .on('data', (row) => {
-                    // Assuming phishing domains start from the 3rd entry (first two are headers/original domain)
-                    data.phishingDomains.push(row);
-                })
-                .on('end', () => {
-                    allData.push(data); // Push data once the stream for this file ends
-                    processedFiles++; // Increment processed file count
-
-                    // When all files are processed, send the response
-                    if (processedFiles === csvFiles.length) {
-                        res.json(allData); // Send all CSV data to frontend once done
-                    }
-                })
-                .on('error', (error) => {
-                    console.error(`Error processing file ${file}:`, error);
-                    processedFiles++; // Still increment to avoid hanging
-                    if (processedFiles === csvFiles.length) {
-                        res.json(allData); // Send partial data if an error occurs
-                    }
+        fs.createReadStream(filePath)
+            .pipe(csv())
+            .on('data', () => {
+                entryCount++;  // Increment entry count for each row
+            })
+            .on('end', () => {
+                phishingData.push({
+                    domain: domainName,  // Use domainName for the bar graph label
+                    entries: entryCount
                 });
-        });
+
+                // When all files are processed, send the response
+                if (--fileCount === 0) {
+                    res.json(phishingData);
+                }
+            });
     });
 });
+
+// Route to Read Files and Send CSV Data to Frontend
+// app.get('/csv-data', (req, res) => {
+//     const folderPath = path.join(__dirname, 'dynamic'); // CSV folder path
+
+//     fs.readdir(folderPath, (err, files) => {
+//         if (err) {
+//             return res.status(500).send('Unable to scan folder');
+//         }
+
+//         const allData = [];
+//         let processedFiles = 0; // Track processed CSV files
+
+//         // Filter to process only CSV files
+//         const csvFiles = files.filter(file => path.extname(file) === '.csv');
+
+//         if (csvFiles.length === 0) {
+//             return res.json(allData); // Return empty array if no CSV files found
+//         }
+
+//         csvFiles.forEach((file) => {
+//             const domainName = path.basename(file).replace('phishoutput_', '').replace('.csv', '');
+//             const filePath = path.join(folderPath, file);
+
+//             const data = { domain: domainName, phishingDomains: [] };
+
+//             fs.createReadStream(filePath)
+//                 .pipe(csv())
+//                 .on('data', (row) => {
+//                     // Assuming phishing domains start from the 3rd entry (first two are headers/original domain)
+//                     data.phishingDomains.push(row);
+//                 })
+//                 .on('end', () => {
+//                     allData.push(data); // Push data once the stream for this file ends
+//                     processedFiles++; // Increment processed file count
+
+//                     // When all files are processed, send the response
+//                     if (processedFiles === csvFiles.length) {
+//                         res.json(allData); // Send all CSV data to frontend once done
+//                     }
+//                 })
+//                 .on('error', (error) => {
+//                     console.error(`Error processing file ${file}:`, error);
+//                     processedFiles++; // Still increment to avoid hanging
+//                     if (processedFiles === csvFiles.length) {
+//                         res.json(allData); // Send partial data if an error occurs
+//                     }
+//                 });
+//         });
+//     });
+// });
 
 // Start the server
 const PORT = process.env.PORT || 3000;
