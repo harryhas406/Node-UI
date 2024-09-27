@@ -300,3 +300,636 @@ res.send
 
 
 // Script for loading on same page minio and telegram
+
+
+
+
+// FILES-PAGE.HTML OLD TABLE FORMAT
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files in Folder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            /* padding: 20px; */
+        }
+
+        .background {
+            position: absolute;
+            top: 5%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/background.png') no-repeat center center;
+            /*background-size: cover;*/
+            background-size: contain; /* Ensures the image fits within the viewport */
+            opacity: 0.08;  /* 10% opacity */
+            z-index: -1;
+        }
+        .container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+            /* overflow: auto;  Enable scrolling for the container */
+        }
+        .logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 60px; /* Adjust the logo size */
+        }
+        .heading {
+            color: #1669D3;
+            /*color: var(--line-color);*/
+            /*color: #1F618D;*/
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2); /* Subtle shadow for depth */
+            margin: 0;
+            z-index: 2;
+        }
+        .line {
+            position: absolute;
+            top: 100px;
+            width: 100%; /* 75% of the screen width */
+            height: 2px; /* Thickness of the line */
+            background-color: #1F618D; /* English Blue color */ 
+            /*background-color: var(--line-color);*/
+        }
+        .form-container {
+            position: absolute;
+            top: 20px;
+            right: 42%;
+            /*border: 1px solid white;*/
+            /*padding: 10px;
+            border-style: ridge;
+            border-color: grey;
+            box-shadow: 0px 4px 8px rgba(255,255, 255, 0.4);*/
+        }
+        .form-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            /*border-style: ridge;
+            border-color: grey;*/
+            width: 250px;
+            border-radius: 6px;
+            box-shadow: 2px 4px 6px rgba(255,255, 255, 0.5);
+        }
+        .form-container input[type="submit"] {
+            padding: 8px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color); /* Change submit button background in dark mode */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .form-container input[type="submit"]:hover {
+            background-color: var(--button-hover-color);
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 1px;
+            display: none;  /* Initially hidden */
+        }
+        #file-list {
+            /* margin: 140px auto;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+            max-height: 120vh; /* Set the maximum height of the scrollable area */
+            overflow-y: auto;  /* Enable vertical scroll */
+            width: 99%; /* Table takes 90% width */
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2980b9;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .no-files {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+        }
+
+        /* Modal styles */
+        #image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-image {
+            max-width: 90%;
+            max-height: 90%;
+            margin: auto;
+        }
+
+        #close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .results-heading {
+            margin-top: 100px;
+            /* margin-bottom: 8px; */
+            text-align: left;  /* Align text to the left */
+            width: 100%;       /* Ensure it takes the full width */
+            padding-left: 10px; /* Optional: Add some left padding for spacing */
+            color: #0970b5;
+        }
+    </style>
+    
+    <script>
+        async function fetchFiles(folderName) {
+            try {
+                // document.getElementById('loading').style.display = 'block'; // Show loading
+                const response = await fetch(`/files/${folderName}`); // Fetch files from the specified folder
+                const files = await response.json();
+                console.log('Fetched Files:', files); // Log fetched files for debugging
+    
+                if (Array.isArray(files) && files.length > 0) {
+                    let tableRows = '';
+                    files.forEach(file => {
+                        console.log('Processing file:', file); // Log each file name being processed
+                        
+                        // Split the file path to get the file name and its details
+                        const fileNameWithDetails = file.split('/').pop(); // Get the file name by splitting at '/'
+                        const underscoreIndex = fileNameWithDetails.lastIndexOf('_'); // Find last underscore
+    
+                        // If there's an underscore, split it to get the discovered date part
+                        if (underscoreIndex !== -1) {
+                            const discoveredDateWithType = fileNameWithDetails.substring(underscoreIndex + 1); // Get the part after '_'
+                            const fileName = fileNameWithDetails.substring(0, underscoreIndex); // Get the name before '_'
+                            
+                            // Extract the discovered date and file type
+                            const discoveredDate = discoveredDateWithType.split('.')[0]; // Extract the date (before ".")
+                            const fileType = discoveredDateWithType.split('.').pop().toUpperCase(); // Extract the file type (after ".")
+    
+                            // Append a row to the table with file name, discovered date, and file type
+                            const icon = fileType === 'PNG' ? 'fa-file-image' : (fileType === 'CSV' ? 'fa-file-csv' : 'fa-file');
+                            tableRows += `
+                            <tr>
+                                <td><i class="fas ${icon}"></i><a href="${isImageFile(fileType) ? 'javascript:void(0);' : `/fetch/${encodeURIComponent(file)}`}" onclick="${isImageFile(fileType) ? `openModal('/fetch/${encodeURIComponent(file)}')` : ''}">${fileName}</a>
+                                <td>${formatDate(discoveredDate)}</td>
+                                <td>${fileType}</td>
+                            </tr>
+                        `;
+                        } else {
+                            // Handle filenames without an underscore
+                            const fileType = fileNameWithDetails.split('.').pop().toUpperCase(); // Get the file type
+                            const fileName = fileNameWithDetails; // Use the full filename as no date is present
+    
+                            // Append a row to the table with the file name and file type
+                            const icon = fileType === 'PNG' ? 'fa-file-image' : (fileType === 'CSV' ? 'fa-file-csv' : 'fa-file');
+                            tableRows += `
+                                <tr>
+                                    <td><i class="fas ${icon}"></i><a href="${isImageFile(fileType) ? 'javascript:void(0);' : `/fetch/${encodeURIComponent(file)}`}" onclick="${isImageFile(fileType) ? `openModal('/fetch/${encodeURIComponent(file)}')` : ''}">${fileName}</a>
+                                    </td>
+                                    <td>No date available</td>
+                                    <td>${fileType}</td>
+                                </tr>   
+                            `;
+                        }
+                    });
+    
+                    // Create a table with the rows
+                    document.getElementById('file-list').innerHTML = `
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Discovered Date</th>
+                                    <th>File Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    `; 
+                } else {
+                    document.getElementById('file-list').innerHTML = 'No files found in this folder.';
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                document.getElementById('file-list').innerHTML = 'Error loading files.';
+            }
+        }
+    
+        // Function to format the discovered date (assuming it's in YYYYMMDD format)
+        function formatDate(dateString) {
+            if (dateString.length === 8) {
+                const year = dateString.substring(0, 4);
+                const month = dateString.substring(4, 6);
+                const day = dateString.substring(6, 8);
+                return `${day}-${month}-${year}`; // Flip the date order to DD-MM-YYYY
+            }
+            return dateString; // Return as-is if not in expected format
+        }
+        
+        // Function to check if the file is an image
+        function isImageFile(fileType) {
+            return ['PNG', 'JPG', 'JPEG', 'GIF'].includes(fileType);
+        }
+        // Function to open the modal with the image
+        function openModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            modalImage.src = imageSrc; // Set the image source
+            modal.style.display = 'flex'; // Show the modal
+        }
+    
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none'; // Hide the modal
+        }
+    
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const folderName = params.get('folderName');
+    
+            if (folderName) {
+                document.getElementById('folder-name').innerText = folderName;
+                fetchFiles(folderName);
+            } else {
+                document.getElementById('file-list').innerHTML = 'No folder specified.';
+            }
+    
+            // Ensure the modal elements are available before adding event listeners
+            const modal = document.getElementById('image-modal');
+            const closeButton = document.getElementById('close-modal');
+    
+            if (modal && closeButton) {
+                // Event listener to close the modal when clicking outside the image
+                modal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeModal(); // Close if the background is clicked
+                    }
+                });
+    
+                // Close modal when clicking the close button
+                closeButton.addEventListener('click', closeModal);
+            }
+        };
+    </script>
+        
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="logo"></a>
+        <h1 class="heading">Files in Folder: <span id="folder-name"></span></h1>
+        <div class="line"></div>
+        <h2 class="results-heading">Files in Folder: <span id="folder-name"></h2>
+        <div id="file-list">
+            <!-- File list will be populated here -->
+        </div>
+    </div>
+    <!-- <h2 class="results-heading">Files in Folder: <span id="folder-name"></h2>
+    <div id="file-list">
+         File list will be populated here 
+    </div> -->
+    <!-- <h1>Files in Folder: <span id="folder-name"></span></h1>
+    <div id="loading" style="display: none; text-align: center;">
+        <p>Loading files...</p>
+        <img src="Spinner-3.gif" alt="Loading" />
+    </div> -->
+    
+    <!-- Modal for displaying images -->
+    <div id="image-modal">
+        <span id="close-modal">&times;</span>
+        <img id="modal-image" src="" alt="File Image">
+    </div>
+</body>
+</html>
+
+
+
+
+// OLD DARKWEB.HTML WITH SINGLE FILE NAME only
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darkweb Files</title>
+    <style>
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 2px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 5px;
+        }
+
+        .logo {
+            width: 35px;
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .line {
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            margin: 0;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 50%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .form-container input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+            width: 200px;
+            border-radius: 6px;
+            box-shadow: 2px 4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .form-container input[type="image"] {
+            width: 50px;
+            height: auto;
+            vertical-align: bottom;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ffffff;
+        }
+
+        #file-list {
+            max-width: 60%;
+            margin: 20px auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .folder-container {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .folder {
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
+            cursor: pointer;
+            margin-right: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .folder:hover {
+            background-color: #444;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        table th {
+            background-color: #2C3E50;
+            color: #fff;
+        }
+
+        table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        table tr:hover {
+            background-color: #333;
+        }
+    </style>    
+</head>
+<body>
+    <div class="container">
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+            <form class="form-container" action="/" method="post" onsubmit="search(event)">
+                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="image" src="/searchlogo1.png" alt="submit">
+            </form>
+            <div class="nav-links">
+                <a href="/drkweb">DarkWeb</a>
+                <a href="/telegram">Hactivist_Terrorism</a>
+                <a href="/ransomware">RansomWare</a>
+                <a href="/phishing">Phishing</a>
+            </div>
+        </div>
+        <div class="line"></div>
+    </div>
+    
+    <h1>DarkWeb Leak File Explorer</h1>
+
+    <div id="file-list">
+        <div class="folder-container" id="folder-container">
+            <!-- Folder names will appear here -->
+        </div>
+
+        <div class="table-container">
+            <table id="file-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Download Link</th>
+                    </tr>
+                </thead>
+                <tbody id="file-table-body">
+                    <!-- File entries will appear here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Function to load folder structure and display folder names horizontally
+        function loadFolderStructure() {
+            fetch('/list')
+                .then(response => response.json())
+                .then(data => {
+                    const folderContainer = document.getElementById('folder-container');
+                    let folderHtml = '';
+
+                    // Loop through folders and display names horizontally
+                    for (const folder in data) {
+                        folderHtml += `<div class="folder" onclick="showFiles('${folder}')">${folder}</div>`;
+                    }
+
+                    folderContainer.innerHTML = folderHtml;
+                })
+                .catch(error => {
+                    document.getElementById('file-list').innerHTML = `<p>Error loading data: ${error.message}</p>`;
+                });
+        }
+
+        // Function to display files in a table when a folder is clicked
+        function showFiles(folderName) {
+            fetch(`/list/${folderName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('file-table');
+                    const tableBody = document.getElementById('file-table-body');
+                    let fileHtml = '';
+
+                    // Access the file list under the folder name
+                    const files = data[folderName];
+
+                    // Check if 'files' is an array and handle accordingly
+                    if (Array.isArray(files)) {
+                        files.forEach(file => {
+                            fileHtml += `
+                                <tr>
+                                    <td>${file}</td>
+                                    <td><a href="/fetch/${encodeURIComponent(folderName)}/${encodeURIComponent(file)}" target="_blank">Download</a></td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        // If files is not an array, show a message or log the issue
+                        fileHtml = `<tr><td colspan="2">No files available or invalid data format</td></tr>`;
+                        console.error('Expected an array but got:', files);
+                    }
+
+                    tableBody.innerHTML = fileHtml;
+                    table.style.display = 'table';  // Show the table
+                })
+                .catch(error => {
+                    alert(`Error loading files for ${folderName}: ${error.message}`);
+                });
+        }
+
+        // Load folder structure when the page loads
+        window.onload = loadFolderStructure;
+    </script>
+</body>
+</html>
