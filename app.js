@@ -525,38 +525,55 @@ app.get('/minio-files', async (req, res) => {
     }
 });
 
-app.post('/api/search', async (req, res) => {
-    const keyword = req.body.input_string;
+// app.post('/api/search', async (req, res) => {
+//     const keyword = req.body.input_string?.trim(); // Get input and trim whitespace
 
-    try {
-        // Search in Elasticsearch for messages
-        const esResponse = await client.search({
-            index: 'telegram_messages',
-            body: {
-                query: {
-                    multi_match: {
-                        query: keyword,
-                        fields: ['text', 'categories']
-                    }
-                }
-            }
-        });
+//     // Check if the keyword is empty
+//     if (!keyword) {
+//         return res.status(400).json({ error: 'No keyword provided' });
+//     }
 
-        // Search in MinIO for files matching the keyword
-        const minioFiles = await listFiles();  // A function to list MinIO files
-        const filteredFiles = minioFiles.filter(file => file.includes(keyword));
+//     try {
+//         // Search in Elasticsearch for messages
+//         const esResponse = await client.search({
+//             index: 'telegram_messages',
+//             body: {
+//                 query: {
+//                     multi_match: {
+//                         query: keyword,
+//                         fields: ['text', 'categories']
+//                     }
+//                 }
+//             }
+//         });
 
-        // Combine results
-        res.json({
-            elasticsearchResults: esResponse.hits.hits,
-            minioFiles: filteredFiles
-        });
+//         // Search in MinIO for files matching the keyword
+//         const minioFiles = await listFiles('darkwebleaks');  // A function to list MinIO files
+//         const filteredFiles = minioFiles.filter(file => file.includes(keyword));
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while searching' });
-    }
-});
+//         // Format the results
+//         const formattedResults = {
+//             elasticsearchResults: esResponse.hits.hits.map(hit => ({
+//                 id: hit._id,
+//                 text: hit._source.text,
+//                 categories: hit._source.categories,
+//                 date: hit._source.timestamp || 'Unknown Date' // Add more fields as needed
+//             })),
+//             minioFiles: filteredFiles.map(file => ({
+//                 name: file,
+//                 link: `/fetch/${file}` // Adjust the link as necessary
+//             }))
+//         };
+
+//         // Send formatted results back to the client
+//         res.json(formattedResults);
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'An error occurred while searching' });
+//     }
+// });
+
 
 // Fetching Data from Elasticsearch for pie chart
 async function fetchElasticData() {

@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="socialMediaStyles.css">
 </head>
 <body>
-    <div class="container"></div>
+    <div class="container">
         <div class="header-content">
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
-            <!-- <h1 class="heading">CDOT Assessment</h1> -->
             <form class="form-container" action="" method="post" onsubmit="search(event)">
                 <input type="text" name="input_string" placeholder="Enter keyword to Search">
                 <input type="image" src="/searchlogo1.png" alt="submit">
@@ -23,27 +22,44 @@
             </div>
         </div>
         <div class="line"></div>        
-    </div>
-    <iframe 
-        src="http://localhost:5601/app/dashboards#/view/ad7c9bd0-68ec-11ef-9a62-bbd18dfe9698?embed=true&_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow%2Fw%2Cto%3Anow%2Fw))"  
-        height="600" 
-        width="100%">
-    </iframe>
-    <h1>Messages</h1>
-    <button id="alertsButton">Show Alerts</button>
-    <table id="messagesTable">
-        <thead>
-            <tr>
-                <th>Channel</th>
-                <th>Message</th>
-                <th>Timestamp</th>
-                <th>Categories</th>
-            </tr>
-        </thead>
-        <tbody id="messagesTableBody">
-            
-        </tbody>
-    </table>
+    
+        <!-- Embed iframe for dashboard -->
+        <iframe 
+            src="http://localhost:5601/app/dashboards#/view/ad7c9bd0-68ec-11ef-9a62-bbd18dfe9698?embed=true&_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow%2Fw%2Cto%3Anow%2Fw))"  
+            height="600" 
+            width="100%">
+        </iframe>
+        
+        <!-- Messages Section -->
+        <h1>Messages</h1>
+        <button id="alertsButton">Show Alerts</button>
+        <table id="messagesTable">
+            <thead>
+                <tr>
+                    <th>Threat Actor</th>
+                    <th>Message</th>
+                    <th>Timestamp</th>
+                    <th>India_Related</th>
+                    <th>Categories</th>
+                    <th>Details</th> <!-- New column for view details -->
+                </tr>
+            </thead>
+            <tbody id="messagesTableBody">
+                <!-- Rows will be inserted dynamically -->
+            </tbody>
+        </table>
+        
+        <!-- Modal for displaying full message details -->
+        <div id="messageModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Message Details</h2>
+                <p id="modalMessageText"></p>
+            </div>
+        </div>       
+    </div> <!-- Closing the container div properly -->
+
+    <!-- Link to external JavaScript file -->
     <script src="main.js"></script>
 </body>
 </html>
