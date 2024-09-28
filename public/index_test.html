@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDOT Assessment</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
+    <style>
+        /* For Chrome, Safari, and Edge */
+        ::-webkit-scrollbar {
+            width: 4px; /* Set the width of the scrollbar */
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;  /* Track background */
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Color of the scroll handle (thumb) */
+            border-radius: 10px; /* Make the scroll handle rounded */
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker color when hovering over the scroll handle */
+        }
+        /* Define dark mode as the default */
+        body {
+            --background-color: #1e1e1e;
+            --text-color: #fff;
+            --line-color: #fff;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
+            scrollbar-color: #888 #1e1e1e; /* thumb color and track color for firefox only */
+        }
+
+        .background {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            width: 70%;
+            height: 70%;
+            background: url('/background.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.05;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            /* overflow: auto; */
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 5px;
+            top: 5px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            width: 35px;
+            margin-right: 10px;
+        }
+
+        /* .heading {
+            color: #1669D3;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0;
+            word-wrap: break-word;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
+        } */
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            width: 100%;
+            z-index: 10;
+            /* margin-left: auto; */
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+            z-index: 20;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .line {
+            width: 100%;
+            height: 2px;
+            background-color: var(--line-color);
+            margin: 0;
+        }
+
+        /* Center the search form */
+        .form-container {
+            /* flex-grow: 1;
+            display: flex;
+            justify-content: right;
+            text-align: right;
+            top: 8px;
+            width: 50%;
+            padding: 5px; */
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            width: 50%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 4px;
+        }
+
+        .form-container input[type="text"] {
+            padding: 5px;
+            font-size: 14px;
+            width: 200px;
+            border-radius: 6px;
+            box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
+        }
+
+        .form-container input[type="image"] {
+            width: 50px;
+            height: auto;
+            vertical-align: bottom;
+            /* padding: 8px 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color);
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px; */
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap; /* Allow the items to wrap into multiple rows */
+            justify-content: space-between;
+            margin: 20px;
+            gap: 20px; /* Add gap between the boxes */
+            overflow-y: auto;
+            background-color: #1c1c1c; /* Dark background for the entire content */
+        }
+
+        .column {
+            width: 47.97%; /* Full width for the main column */
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            height: auto; /* Height adjusts based on content */
+            background-color: #313840; /* Add background color */
+            display: flex; /* Enable flexbox */
+            flex-direction: column; /* Align items vertically */
+        }
+
+        .full-column {
+            flex-direction: column; /* Stack the links and chart vertically */
+        }
+
+        .links-chart-wrapper {
+            display: flex; /* Enable flexbox for links and chart */
+            justify-content: space-between; /* Space between links and chart */
+            align-items: flex-start; /* Align items to the top */
+            width: 100%; /* Full width for the wrapper */
+        }
+
+        .links-column {
+            width: 20%; /* Adjust width for links */
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            background-color: #313840; /* Dark background */
+            height: 400px; /* Fixed height for links column */
+            overflow-y: auto; /* Enable vertical scroll for folder links */
+        }
+
+        .chart-column {
+            width: 75%; /* Adjust width for chart */
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            background-color: #313840; /* Dark background */
+            height: 400px; /* Fixed height for chart column */
+        }
+
+        h5 {
+            color: #ffcc00; /* Title color */
+            text-align: center; /* Center the title */
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+
+        .table-container {
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: var(--table-header-bg);
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-bg);
+        }
+        tr:hover {
+            background-color: var(--table-row-hover-bg);
+        }
+
+        a {
+            color: #689fc4;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+        
+    </style>
+    <script>
+        function validateForm(event) {
+            const input = document.querySelector('input[name="input_string"]');
+            const errorMessage = document.getElementById('error-message');
+            
+            if (input.value.trim() === "") {
+                event.preventDefault();
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        }
+
+        // Donut Chart using canvasjs for Social Media
+        async function fetchChartData() {
+            try {
+                const response = await fetch('/pie-chart-data'); // Adjust the route as needed
+                const data = await response.json();
+
+                if (Array.isArray(data) && data.length > 0) {
+                    const dataPoints = data.map(bucket => ({
+                        y: bucket.doc_count,
+                        name: bucket.key
+                    }));
+
+                    // Create the CanvasJS donut chart
+                    var chart = new CanvasJS.Chart("socialMediaChartContainer", {
+                        exportEnabled: true,
+                        animationEnabled: true,
+                        backgroundColor: "transparent", // Set background color to transparent
+                        legend: {
+                            cursor: "pointer",
+                            itemclick: explodePie,
+                            fontColor: "#fff", // Set legend text color to white
+                            fontSize: 11
+                        },
+                        data: [{
+                            type: "doughnut",
+                            showInLegend: true,
+                            toolTipContent: "<span style='color: #ff5733'>{name}</span>: <strong>{y}%</strong>",
+                            indexLabel: "{name} - {y}",
+                            indexLabelFontColor: "#fff",  // Set index label color to white
+                            innerRadius: "60%", // Set inner radius for donut effect
+                            dataPoints: dataPoints
+                        }],
+                        // credits: {
+                        //     enabled: false  // Disable the watermark
+                        // }
+                    });
+                    chart.render();
+                } else {
+                    document.getElementById('socialMediaChartContainer').innerHTML = 'No data to display';
+                }
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        }
+
+        // Explode pie slice on click
+        function explodePie(e) {
+            if (typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+                e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+            } else {
+                e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+            }
+            e.chart.render();
+        }
+
+        // Donut chart for Darkweb files, display using Canvasjs
+        async function fetchFolderCountData() {
+            try {
+                const response = await fetch('/folder-count');  // Fetch the folder counts
+                const data = await response.json();
+
+                // Log the response for debugging
+                console.log('Fetched Data:', data);
+
+                if (Object.keys(data).length > 0) {
+                    const dataPoints = Object.keys(data).map(folder => ({
+                        y: data[folder],  // File counts as values
+                        name: folder      // Folder names as labels
+                    }));
+
+                    console.log('Data Points:', dataPoints);
+
+                    // Create the CanvasJS pie chart
+                    var chart = new CanvasJS.Chart("darkwebFolderChart", {
+                        exportEnabled: true,
+                        animationEnabled: true,
+                        backgroundColor: "transparent",  // Transparent background
+                        legend: {
+                            cursor: "pointer",
+                            itemclick: explodePie,
+                            fontColor: "#fff", // Set legend text color to white
+                            fontSize: 11
+                        },
+                        data: [{
+                            type: "doughnut",
+                            showInLegend: true,
+                            toolTipContent: "{name}: <strong>{y}</strong>",
+                            indexLabel: "{name} - {y}",  // Folder name and file count
+                            indexLabelFontColor: "#fff",  // White text for labels
+                            dataPoints: dataPoints
+                        }],
+                        credits: {
+                            enabled: false  // Disable the watermark
+                        }
+                    });
+
+                    // Display folder names as clickable links
+                    let folderLinks = '';
+                    dataPoints.forEach(folder => {
+                        folderLinks += `<li><a href="/files-page?folderName=${encodeURIComponent(folder.name)}">${folder.name}</a></li>`;
+                    });
+                    document.getElementById('folder-links').innerHTML = `<ul>${folderLinks}</ul>`;
+                    // Render the chart
+                    chart.render();
+                } else {
+                    document.getElementById('darkwebFolderChart').innerHTML = 'No data to display';
+                }
+            } catch (error) {
+                console.error('Error fetching folder count data:', error);
+                document.getElementById('darkwebFolderChart').innerHTML = 'Error loading data';
+            }
+        }
+
+        async function fetchFiles(folderName) {
+            try {
+                const response = await fetch(`/files/${folderName}`); // Fetch files from the specified folder
+                const files = await response.json();
+
+                // Log the response for debugging
+                console.log('Fetched Files:', files);
+
+                if (files.length > 0) {
+                    let fileLinks = '';
+                    files.forEach(file => {
+                        fileLinks += `<li><a href="/fetch/${encodeURIComponent(file)}" target="_blank">${file}</a></li>`;
+                    });
+                    document.getElementById('file-list').innerHTML = `<ul>${fileLinks}</ul>`; // Display the files
+                } else {
+                    document.getElementById('file-list').innerHTML = 'No files found in this folder.'; // Handle no files case
+                }
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                document.getElementById('file-list').innerHTML = 'Error loading files.'; // Handle fetch error
+            }
+        }
+
+        //Ashish
+        // Bar Graph for displaying phishing data using Canvasjs
+        async function displayPhishingData() {
+            try {
+                // Fetch the phishing data from the backend
+                const response = await fetch("/get_phishing_data");
+                const phishingData = await response.json();
+
+                // Process the phishing data into dataPoints for the chart
+                const dataPoints = phishingData.map(item => ({
+                    y: item.entries,
+                    label: item.domain  // Use the domain from the file name as the label
+                }));
+
+                // Create the chart
+                var chart = new CanvasJS.Chart("phishingDataChart", {
+                    exportEnabled: true,
+                    animationEnabled: true,
+                    backgroundColor: "transparent",
+                    legend: {
+                        cursor: "pointer",
+                        itemclick: explodePie,
+                        fontColor: "#fff",
+                        fontSize: 10
+                    },
+                    axisY: {
+                        title: "Phishing Entries",
+                        fontColor: "#fff",
+                        labelFontColor: "#fff"
+                    },
+                    axisX: {
+                        title: "Domain",
+                        fontColor: "#fff",
+                        labelFontColor: "#fff",
+                        interval: 1, // Force every label to display
+                        labelAngle: 15, // Rotate labels to avoid overlapping
+                    },
+                    data: [{
+                        type: "column",
+                        showInLegend: true,
+                        legendMarkerColor: "#fff",
+                        legendText: "Domain",
+                        dataPoints: dataPoints
+                    }]
+                });
+
+                chart.render();
+
+                // Add hover effect to enhance visibility
+                const bars = document.querySelectorAll(".canvasjs-chart-canvas rect");
+                bars.forEach(bar => {
+                    bar.addEventListener("mouseover", () => {
+                            bar.style.fill = "#FFD700";  // Gold color on hover
+                        });
+                        bar.addEventListener("mouseout", () => {
+                            bar.style.fill = "#4CAF50";  // Original color
+                        });
+                    });
+
+
+            } catch (error) {
+                console.error("Error fetching phishing data:", error);
+            }
+        }
+
+        // Combine both functions under a single window.onload event
+        window.onload = async function() {
+            // loadFiles();  // Load MinIO files
+            // loadIndiaRelatedAlerts();  // Load India-related alerts
+            fetchChartData();  // Load Pie Chart data Fr
+            fetchFolderCountData(); // Load Darkweb files as Chart
+            displayPhishingData(); // Display Phishing Data as Chart
+            // fetchFiles();
+        };
+
+    </script>
+</head>
+<body>
+    <!-- <div class="background"></div> -->
+    
+    <div class="container">
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+            <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
+                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="image" src="/searchlogo1.png" alt="submit">
+                <div id="error-message" class="error-message">*Please Enter a valid keyword</div>
+            </form>
+            <div class="nav-links">
+                <a href="/drkweb">DarkWeb</a>
+                <a href="/telegram">Hactivist_Terrorism</a>
+                <a href="/ransomware">RansomWare</a>
+                <a href="/phishing">Phishing</a>
+            </div>
+        </div>
+        <div class="line"></div>        
+    </div>
+
+    <div class="content">
+        <!-- Box 1 -->
+        <div class="column full-column">
+            <h5>DARKWEB FILES</h5>
+            <div class="links-chart-wrapper">
+                <div class="links-column">
+                    <div id="folder-links" style="text-align: left;">
+                        <!-- Folder links will be inserted here by fetchFolderCountData() -->
+                    </div>
+                    <div id="file-list">
+                        <!-- Files will be displayed here when a folder is clicked -->
+                    </div>
+                </div>
+    
+                <div class="chart-column">
+                    <div id="darkwebFolderChart" style="height: 400px; background: transparent;">
+                        <!-- Pie chart will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Box 2 -->
+        <div class="column">
+            <h5>SOCIAL MEDIA</h5>
+            <div id="socialMediaChartContainer" style="height: 400px; width: 100%; background: transparent;"></div> <!-- Chart will render here -->
+        </div>
+    
+        <!-- Box 3 -->
+        <div class="column">
+            <h5>RANSOM STATS OF MONTH</h5>
+            <!-- Embedding monthgraph.html in this box -->
+            <iframe src="/bar_chart_last_7_days.html" style="width:100%; height:350px; border:none;"></iframe>
+        </div>
+        
+        <!-- Box 4 -->
+        <div class="column">
+            <h5>PHISHING</h5>
+            <div id="phishingDataChart" style="width: 100%; height: 370px; background: transparent;"></div>
+        </div>
+    </div>
+    
+</body>
+</html>
