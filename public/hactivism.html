@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Data Display</title>
+    <title>Hactivist_Terrorism</title>
     <style>
         /* For Chrome, Safari, and Edge */
         ::-webkit-scrollbar {
@@ -57,7 +57,18 @@
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
         }
-
+        .background {
+            position: absolute;
+            top: 6%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/background.png') no-repeat center center;
+            /*background-size: cover;*/
+            background-size: contain; /* Ensures the image fits within the viewport */
+            opacity: 0.08;  /* 10% opacity */
+            z-index: -1;
+        }
         /* .dark-mode {
             background-color: #2c2c2c;
             color: #ffffff;
@@ -119,22 +130,33 @@
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
+            width: 85%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-left: auto;
+            margin-right: auto;
             margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: left;
+            text-align: center;
             word-wrap: break-word;
             max-width: 150px;
         }
 
         th {
             background-color: #4CAF50;
-
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        tr:hover{
+            background-color: #3c9abe;
+            transition: background-color 0.3s ease;
         }
 
         /* .dark-mode th {
@@ -142,17 +164,11 @@
             color: #ffffff;
         } */
 
-        .view-details {
-            color: blue;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
         #details-sidebar {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
+            right: -500px;
+            width: 500px;
             height: 100%;
             background-color: #f9f9f9;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
@@ -230,9 +246,31 @@
         .view-details:hover{
             color: #0056b3;
         }
+        .sentiment-box {
+            font-weight: bold;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block; /* To ensure the box wraps tightly around the text */
+        }
+
+        .sentiment-positive {
+            background-color: green;
+        }
+
+        .sentiment-neutral {
+            background-color: orange;
+        }
+
+        .sentiment-negative {
+            background-color: red;
+        }
+
+
     </style>
 </head>
 <body>
+    <div class="background"></div>
     <div class="container">
         <div class="header-content">
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
@@ -265,6 +303,7 @@
                     <th>Time (ISO)</th>
                     <th>Sentiment</th>
                     <th>Text</th>
+                    <th>Categories</th>
                     <th>View Details</th>
                 </tr>
             </thead>
@@ -297,16 +336,29 @@
 
             data.forEach(row => {
                 const truncatedText = row.Text.length > 100 ? row.Text.slice(0,100) + '...' : row.Text // limit to 50 keywords
+                const sentimentClass = getSentimentClass(row.sentiment); // Get the class based on sentiment
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.Channel}</td>
                     <td>${row['Time (ISO)']}</td>
-                    <td>${row.sentiment}</td>
+                    <td><span class="sentiment-box ${sentimentClass}">${row.sentiment}</span></td>
                     <td>${truncatedText}</td>
+                    <td>${row.Categories}</td>
                     <td class="view-details" onclick="showDetails(${JSON.stringify(row).replace(/"/g, '&quot;')})">View Details</td>
                 `;
                 tableBody.appendChild(tr);
             });
+        }
+        // Function to determine the CSS class based on sentiment value
+        function getSentimentClass(sentiment) {
+            if (sentiment.toLowerCase() === 'positive') {
+                return 'sentiment-positive';
+            } else if (sentiment.toLowerCase() === 'neutral') {
+                return 'sentiment-neutral';
+            } else if (sentiment.toLowerCase() === 'negative') {
+                return 'sentiment-negative';
+            }
+            return ''; // Default class (no specific style)
         }
 
         // Filter the table based on the search input

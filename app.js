@@ -915,9 +915,9 @@ app.get('/unified-search', async (req, res) => {
         minioResults: []
     };
 
-    // 1. Search Elasticsearch
     try {
-        const elasticResults = await client.search({
+        // 1. Search Elasticsearch
+        const elasticPromise = client.search({
             index: 'telegram_messages',
             body: {
                 query: {
@@ -931,21 +931,19 @@ app.get('/unified-search', async (req, res) => {
                     }
                 }
             }
+        }).then(elasticResults => {
+            results.elasticResults = elasticResults.hits.hits.map(hit => ({
+                source: 'Elasticsearch',
+                data: hit._source
+            }));
+        }).catch(err => {
+            console.error('Error fetching Elasticsearch results:', err);
         });
-        results.elasticResults = elasticResults.hits.hits.map(hit => ({
-            source: 'Elasticsearch',
-            data: hit._source
-        }));
-    } catch (err) {
-        console.error('Error fetching Elasticsearch results:', err);
-    }
 
-    // 2. Search CSV (data.csv)
-    const csvFilePath = path.join(__dirname, 'tsocData', 'data.csv');
-    try {
-        await new Promise((resolve, reject) => {
+        // 2. Search CSV (data.csv)
+        const csvPromise = new Promise((resolve, reject) => {
             const csvResults = [];
-            fs.createReadStream(csvFilePath)
+            fs.createReadStream(path.join(__dirname, 'tsocData', 'data.csv'))
                 .pipe(csv())
                 .on('data', (row) => {
                     if (Object.values(row).some(value => value.toLowerCase().includes(query))) {
@@ -959,56 +957,67 @@ app.get('/unified-search', async (req, res) => {
                 .on('error', (err) => {
                     reject(err);
                 });
-        });
-    } catch (err) {
-        console.error('Error reading CSV file:', err);
-    }
-
-    // 3. Search posts.json
-    try {
-        const postsFilePath = path.join(__dirname, 'posts.json');
-        const postsData = JSON.parse(fs.readFileSync(postsFilePath, 'utf8'));
-
-        const postMatches = postsData.filter(post => {
-            const postTitle = post.post_title?.toLowerCase() || '';
-            const groupName = post.group_name?.toLowerCase() || '';
-            const discovered = post.discovered?.toLowerCase() || '';
-            return postTitle.includes(query) || groupName.includes(query) || discovered.includes(query);
+        }).catch(err => {
+            console.error('Error reading CSV file:', err);
         });
 
-        results.jsonResults = postMatches.map(post => ({
-            source: 'JSON',
-            data: post
-        }));
-    } catch (jsonError) {
-        console.error("Error reading or parsing posts.json:", jsonError);
-    }
-
-    // 4. Search MinIO
-    try {
-        const bucketName = 'darkwebleaks';
-        const stream = minioClient.listObjectsV2(bucketName, '', true);
-        const minioResults = [];
-
-        stream.on('data', (obj) => {
-            if (obj.name.toLowerCase().includes(query)) {
-                minioResults.push({ source: 'MinIO', data: obj.name });
-            }
+        // 3. Search posts.json
+        const jsonPromise = new Promise((resolve, reject) => {
+            const postsFilePath = path.join(__dirname, 'posts.json');
+            fs.readFile(postsFilePath, 'utf8', (err, data) => {
+                if (err) {
+                    console.error("Error reading posts.json:", err);
+                    return reject(err);
+                }
+                try {
+                    const postsData = JSON.parse(data);
+                    const postMatches = postsData.filter(post => {
+                        return [post.post_title, post.group_name, post.discovered].some(field => (field || '').toLowerCase().includes(query));
+                    });
+                    results.jsonResults = postMatches.map(post => ({
+                        source: 'JSON',
+                        data: post
+                    }));
+                    resolve();
+                } catch (parseError) {
+                    console.error("Error parsing posts.json:", parseError);
+                    reject(parseError);
+                }
+            });
+        }).catch(err => {
+            console.error("Error processing posts.json:", err);
         });
 
-        stream.on('end', () => {
-            results.minioResults = minioResults;
-            // Send all results as a unified response
-            res.json(results);
+        // 4. Search MinIO
+        const minioPromise = new Promise((resolve, reject) => {
+            const minioResults = [];
+            const stream = minioClient.listObjectsV2('darkwebleaks', '', true);
+            stream.on('data', (obj) => {
+                if (obj.name.toLowerCase().includes(query)) {
+                    minioResults.push({ source: 'MinIO', data: obj.name });
+                }
+            });
+            stream.on('end', () => {
+                results.minioResults = minioResults;
+                resolve();
+            });
+            stream.on('error', (err) => {
+                console.error('Error searching MinIO:', err);
+                reject(err);
+            });
+        }).catch(err => {
+            console.error('Error initializing MinIO search:', err);
         });
 
-        stream.on('error', (err) => {
-            console.error('Error searching MinIO:', err);
-            res.status(500).send('Error searching MinIO');
-        });
-    } catch (err) {
-        console.error('Error initializing MinIO search:', err);
-        res.status(500).send('Error initializing MinIO search');
+        // Wait for all searches to complete
+        await Promise.all([elasticPromise, csvPromise, jsonPromise, minioPromise]);
+
+        // Send all results as a unified response
+        res.json(results);
+
+    } catch (error) {
+        console.error('Error during unified search:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 

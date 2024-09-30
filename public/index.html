@@ -87,10 +87,16 @@
                 console.log('Fetched Data:', data);
 
                 if (Object.keys(data).length > 0) {
-                    const dataPoints = Object.keys(data).map(folder => ({
-                        y: data[folder],  // File counts as values
-                        name: folder      // Folder names as labels
-                    }));
+                    const totalFiles = Object.values(data).reduce((sum, count) => sum + count, 0);
+                    const dataPoints = Object.keys(data).map(folder => {
+                        const fileCount = data[folder];
+                        const percentage = ((fileCount/totalFiles)*100).toFixed(2);
+                        return{
+                            y: fileCount,
+                            name:folder,
+                            percentage:percentage
+                        };
+                    });
 
                     console.log('Data Points:', dataPoints);
 
@@ -112,8 +118,8 @@
                         data: [{
                             type: "doughnut",
                             showInLegend: true,
-                            toolTipContent: "{name}: <strong>{y}</strong>",
-                            indexLabel: "{name} - {y}",  // Folder name and file count
+                            toolTipContent: "{name}: <strong>{percentage}%</strong> ({y} files)",
+                            indexLabel: "{name} - {percentage}%",  // Folder name and file count
                             indexLabelFontColor: "#fff",  // White text for labels
                             dataPoints: dataPoints,
                             // click: function(e) {
@@ -231,7 +237,7 @@
             }
         }
 
-        // Function for Unified Search on Home page
+        // Function for Unified Search
         function performSearch(event) {
             event.preventDefault();
             const query = document.getElementById('search-input').value;
@@ -248,7 +254,8 @@
                     // Update MinIO Results
                     if (data.minioResults.length > 0) {
                         data.minioResults.forEach(item => {
-                            const element = document.createElement("p");
+                            const element = document.createElement("div");
+                            element.classList.add("result-item");
                             element.innerText = `File: ${item.data}`;
                             document.getElementById("minio-results").appendChild(element);
                         });
@@ -259,7 +266,8 @@
                     // Update Elasticsearch Results
                     if (data.elasticResults.length > 0) {
                         data.elasticResults.forEach(item => {
-                            const element = document.createElement("p");
+                            const element = document.createElement("div");
+                            element.classList.add("result-item");
                             element.innerText = `Message: ${item.data.message}, Categories: ${item.data.categories}, Threat Actor: ${item.data.threat_actor}`;
                             document.getElementById("elastic-results").appendChild(element);
                         });
@@ -270,8 +278,9 @@
                     // Update CSV Results
                     if (data.csvResults.length > 0) {
                         data.csvResults.forEach(item => {
-                            const element = document.createElement("p");
-                            element.innerText = JSON.stringify(item.data); // Modify as needed to display relevant CSV data
+                            const element = document.createElement("div");
+                            element.classList.add("result-item");
+                            element.innerText = JSON.stringify(item.data);
                             document.getElementById("csv-results").appendChild(element);
                         });
                     } else {
@@ -281,7 +290,8 @@
                     // Update JSON Results
                     if (data.jsonResults.length > 0) {
                         data.jsonResults.forEach(item => {
-                            const element = document.createElement("p");
+                            const element = document.createElement("div");
+                            element.classList.add("result-item");
                             element.innerText = `Title: ${item.data.post_title}, Group: ${item.data.group_name}, Discovered: ${item.data.discovered}`;
                             document.getElementById("json-results").appendChild(element);
                         });
@@ -338,25 +348,29 @@
 
     <div id="content" class="content">
         <!-- Box 1 -->
-        <div class="column full-column">
+        <div class="column">
+            <h5>DARKWEB</h5>
+            <div id="darkwebFolderChart" style="height: 400px; width: 100%;"></div>
+        </div>
+        <!-- <div class="column full-column">
             <h5>DARKWEB FILES</h5>
             <div class="links-chart-wrapper">
-                <!-- <div class="links-column">
+                <div class="links-column">
                     <div id="folder-links" style="text-align: left;">
                         Folder links will be inserted here by fetchFolderCountData()
                     </div>
                     <div id="file-list">
                         Files will be displayed here when a folder is clicked
                     </div>
-                </div> -->
+                </div>
 
                 <div class="chart-column">
                     <div id="darkwebFolderChart" style="height: 400px; background: transparent;">
-                        <!-- Pie chart will be rendered here -->
+                        Pie chart will be rendered here
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         
         <!-- Box 2 -->
         <div class="column">
@@ -368,37 +382,36 @@
         <div class="column">
             <h5>RANSOM STATS OF MONTH</h5>
             <!-- Embedding monthgraph.html in this box -->
-            <iframe src="/bar_chart_last_7_days.html" style="width:100%; height:350px; border:none;"></iframe>
+            <iframe src="/bar_chart_last_7_days.html" style="width:100%; height:400px; border:none;"></iframe>
         </div>
         
         <!-- Box 4 -->
         <div class="column">
             <h5>PHISHING</h5>
-            <div id="phishingDataChart" style="width: 100%; height: 370px; background: transparent;"></div>
+            <div id="phishingDataChart" style="width: 100%; height: 400px; background: transparent;"></div>
         </div>
     </div>
 
-    <div id="search-results" style="display: none;">
-        <div class="result-box">
-            <h5>MinIO Results</h5>
-            <div id="minio-results"></div>
-        </div>
-    
-        <div class="result-box">
-            <h5>Elasticsearch Results</h5>
-            <div id="elastic-results"></div>
-        </div>
-    
-        <div class="result-box">
-            <h5>CSV Results</h5>
-            <div id="csv-results"></div>
-        </div>
-    
-        <div class="result-box">
-            <h5>JSON Results</h5>
-            <div id="json-results"></div>
-        </div>
-    </div>    
+    <!-- Results Display Area -->
+    <div class="results-section" id="elastic-results">
+        <h3>Elasticsearch Results</h3>
+        <!-- Results will be displayed here -->
+    </div>
+
+    <div class="results-section" id="csv-results">
+        <h3>CSV Results</h3>
+        <!-- Results will be displayed here -->
+    </div>
+
+    <div class="results-section" id="json-results">
+        <h3>JSON Results</h3>
+        <!-- Results will be displayed here -->
+    </div>
+
+    <div class="results-section" id="minio-results">
+        <h3>MinIO Results</h3>
+        <!-- Results will be displayed here -->
+    </div>  
 
     <script>
         function toggleSidebar() {
@@ -411,7 +424,7 @@
             if (sidebar.classList.contains('collapsed')) {
                 content.style.marginLeft = '60px'; // Adjust for collapsed sidebar
             } else {
-                content.style.marginLeft = '200px'; // Adjust for expanded sidebar
+                content.style.marginLeft = '180px'; // Adjust for expanded sidebar
             }
         }
     </script>
