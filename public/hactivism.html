@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Display</title>
+    <style>
+        /* For Chrome, Safari, and Edge */
+        ::-webkit-scrollbar {
+            width: 4px; /* Set the width of the scrollbar */
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;  /* Track background */
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Color of the scroll handle (thumb) */
+            border-radius: 10px; /* Make the scroll handle rounded */
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Darker color when hovering over the scroll handle */
+        }
+        /* Define default colors for dark mode */
+        :root {
+            --background-color: #1e1e1e;
+            --text-color: #fff;
+            --line-color: #fff; /* Change line color in light mode */
+            --button-background-color: #1669D3;
+            --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
+        }
+        /* Light mode styles */
+        body.light-mode {
+            --background-color: #f5f5f5;
+            --text-color: #000;
+            --line-color: #1F618D;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1F618D;
+            --table-header-bg: #4CAF50;
+            --table-row-bg: rgba(199, 245, 245, 0.25);
+            --table-row-hover-bg: #ddd;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* .dark-mode {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        } */
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px;
+        }
+
+        .logo {
+            width: 35px;
+            margin-right: 10px;
+            margin-left: 5px;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        /* Active link style */
+        .nav-links a.active {
+            font-weight: bold;
+            text-decoration: underline;
+            color: #4CAF50; /* Highlight color */
+        }
+
+        .line {
+            width: 100%;
+            height: 2px;
+            background-color: #1F618D;
+        }
+
+        #main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+            max-width: 150px;
+        }
+
+        th {
+            background-color: #4CAF50;
+
+        }
+
+        /* .dark-mode th {
+            background-color: #444444;
+            color: #ffffff;
+        } */
+
+        .view-details {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #details-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background-color: #f9f9f9;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        #details-sidebar.active {
+            right: 0;
+        }
+
+        #close-sidebar {
+            cursor: pointer;
+            color: red;
+            float: right;
+            font-size: 20px;
+        }
+
+        #details-sidebar {
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+        #details-sidebar strong{
+            color: #16d32f;
+        }
+
+        #close-sidebar {
+            color: #ff4d4d;
+        }
+
+        #header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #search-forms {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        #theme-toggle {
+            margin-left: auto;
+            cursor: pointer;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #theme-toggle:hover {
+            background-color: #0056b3;
+        }
+        .view-details{
+            color: #fff;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .view-details:hover{
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-content">
+            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+            <div class="nav-links">
+                <a href="/drkweb">DarkWeb</a>
+                <a href="/hactivism">Hactivist_Terrorism</a>
+                <a href="/ransomware">RansomWare</a>
+                <a href="/phishing">Phishing</a>
+            </div>
+        </div>
+        <div class="line"></div>
+    </div>
+
+    <div id="main-content">
+        <div id="header-container">
+            <button id="theme-toggle">Light Mode</button>
+        </div>
+
+        <div id="search-forms">
+            <input type="text" id="channel-search" class="search-input" placeholder="Search Channel">
+            <input type="text" id="categories-search" class="search-input" placeholder="Search Categories">
+            <input type="text" id="text-search" class="search-input" placeholder="Search Text">
+            <input type="text" id="sentiment-search" class="search-input" placeholder="Search Sentiment">        
+        </div>
+
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Channel</th>
+                    <th>Time (ISO)</th>
+                    <th>Sentiment</th>
+                    <th>Text</th>
+                    <th>View Details</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="details-sidebar">
+        <span id="close-sidebar">X</span>
+        <h2>Details</h2>
+        <div id="details-content"></div>
+    </div>
+
+    <script>
+        let originalData = []; // To store the original data for searching
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data'); // Update the URL as necessary
+                originalData = await response.json(); // Store the original data
+                renderTable(originalData); // Render the initial table
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function renderTable(data) {
+            const tableBody = document.querySelector('#data-table tbody');
+            tableBody.innerHTML = ''; // Clear existing data
+
+            data.forEach(row => {
+                const truncatedText = row.Text.length > 100 ? row.Text.slice(0,100) + '...' : row.Text // limit to 50 keywords
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.Channel}</td>
+                    <td>${row['Time (ISO)']}</td>
+                    <td>${row.sentiment}</td>
+                    <td>${truncatedText}</td>
+                    <td class="view-details" onclick="showDetails(${JSON.stringify(row).replace(/"/g, '&quot;')})">View Details</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Filter the table based on the search input
+        function filterData() {
+            const channelSearchTerm = document.getElementById('channel-search').value.toLowerCase();
+            const categoriesSearchTerm = document.getElementById('categories-search').value.toLowerCase();
+            const textSearchTerm = document.getElementById('text-search').value.toLowerCase();
+            const sentimentSearchTerm = document.getElementById('sentiment-search').value.toLowerCase();
+
+            const filteredData = originalData.filter(row => {
+                const channelMatch = row.Channel.toLowerCase().includes(channelSearchTerm);
+                const categoriesMatch = row.Categories.toLowerCase().includes(categoriesSearchTerm);
+                const textMatch = row.Text.toLowerCase().includes(textSearchTerm);
+                const sentimentMatch = row.sentiment.toLowerCase().includes(sentimentSearchTerm);
+                return (!channelSearchTerm || channelMatch) &&
+                       (!categoriesSearchTerm || categoriesMatch) &&
+                       (!textSearchTerm || textMatch) &&
+                       (!sentimentSearchTerm || sentimentMatch);
+            });
+
+            renderTable(filteredData);
+        }
+
+        document.getElementById('channel-search').addEventListener('input', filterData);
+        document.getElementById('categories-search').addEventListener('input', filterData);
+        document.getElementById('text-search').addEventListener('input', filterData);
+        document.getElementById('sentiment-search').addEventListener('input', filterData);
+
+        function showDetails(row) {
+            const detailsContent = document.getElementById('details-content');
+            detailsContent.innerHTML = `
+                <strong>Channel:</strong> ${row.Channel}<br><br>
+                <strong>Categories:</strong> ${row.Categories}<br><br>
+                <strong>Sentiment:</strong> ${row.sentiment}<br><br>
+                <strong>Keywords:</strong> ${row.keywords}<br><br>
+                <strong>Translated Text:</strong> ${row['Translated Text']}
+
+            `;
+            document.getElementById('details-sidebar').classList.add('active');
+        }
+
+        document.getElementById('close-sidebar').onclick = function() {
+            document.getElementById('details-sidebar').classList.remove('active');
+        };
+
+        // Active link detection
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+
+        document.getElementById('theme-toggle').onclick = function() {
+            document.body.classList.toggle('light-mode');
+            this.textContent = document.body.classList.contains('light-mode') ? 'Dark Mode' : 'Light Mode';
+        };
+
+
+        fetchData();
+    </script>
+</body>
+</html>

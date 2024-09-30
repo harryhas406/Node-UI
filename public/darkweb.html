@@ -19,20 +19,58 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-
+        /* Define default colors for dark mode */
+        :root {
+            --background-color: #1e1e1e;
+            --text-color: #fff;
+            --line-color: #fff; /* Change line color in light mode */
+            --button-background-color: #1669D3;
+            --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
+        }
+        /* Light mode styles */
+        body.light-mode {
+            --background-color: #f5f5f5;
+            --text-color: #000;
+            --line-color: #1F618D;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1F618D;
+            --table-header-bg: #4CAF50;
+            --table-row-bg: rgba(199, 245, 245, 0.25);
+            --table-row-hover-bg: #ddd;
+        }
         body {
+            background-color: var(--background-color);
+            color: var(--text-color);
             font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
             margin: 0;
             padding: 0;
+            height: 200vh;
+            overflow: hidden;  /* Prevent body scroll */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
         }
 
+        .background {
+            position: absolute;
+            top: 6%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/background.png') no-repeat center center;
+            /*background-size: cover;*/
+            background-size: contain; /* Ensures the image fits within the viewport */
+            opacity: 0.08;  /* 10% opacity */
+            z-index: -1;
+        }
         .container {
             position: relative;
+            /* height: 100vh; */
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             padding-top: 5px;
         }
 
@@ -46,7 +84,6 @@
 
         .logo {
             width: 35px;
-            margin-top: 5px;
             margin-left: 5px;
             margin-top: 0px;
         }
@@ -56,23 +93,32 @@
             justify-content: center;
             margin: 0 auto;
             width: 100%;
+            z-index: 10;
         }
 
         .nav-links a {
             margin: 0 10px;
             text-decoration: none;
-            color: #fff;
+            /* color: #fff; */
+            color: var(--text-color);
             font-size: 16px;
+            z-index: 20;
         }
 
         .nav-links a:hover {
             text-decoration: underline;
         }
+        /* Active link style */
+        .nav-links a.active {
+            font-weight: bold;
+            text-decoration: underline;
+            color: #4CAF50; /* Highlight color */
+        }
 
         .line {
             width: 100%;
             height: 2px;
-            background-color: #fff;
+            background-color: #1F618D;
             margin: 0;
         }
 
@@ -83,6 +129,7 @@
             width: 50%;
             display: flex;
             justify-content: flex-end;
+            font-size: 14px; 
         }
 
         .form-container input[type="text"] {
@@ -102,14 +149,14 @@
         h1 {
             text-align: center;
             margin-top: 20px;
-            color: #ffffff;
+            /* color: #ffffff; */
+            color: #1F618D; /* English Blue color */ 
         }
 
         #file-list {
-            max-width: 60%;
-            margin: 20px auto;
-            background: #1e1e1e;
-            padding: 20px;
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
@@ -134,17 +181,32 @@
             transition: background-color 0.3s ease;
         }
 
-        .folder:hover {
-            background-color: #444;
+        /* Define styles for active folder */
+        .folder.active-folder {
+            background-color: #004883;  /* Darker blue */
+            color: white;
         }
+
+        .folder:hover {
+            background-color: #004883;
+        }
+
+        /* .table-container {
+            margin-top: 20px;
+        } */
 
         .table-container {
             margin-top: 20px;
+            max-height: 470px; /* Limit the height of the table container */
+            overflow-y: auto;  /* Enable vertical scrolling */
+            overflow-x: hidden;  /* Disable horizontal scrolling */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 10px 0;
+
         }
 
         table th, table td {
@@ -154,8 +216,12 @@
         }
 
         table th {
-            background-color: #2C3E50;
-            color: #fff;
+            /* background-color: var(--table-header-bg); */
+            background-color: #008db4;
+            color: #ffffff;
+            position: sticky; /* Makes the header sticky */
+            top: 0; /* Sticks to the top of the table container */
+            z-index: 10; /* Ensures header is above the body */
         }
 
         table tr:nth-child(even) {
@@ -163,17 +229,36 @@
         }
 
         table tr:hover {
-            background-color: #333;
+            background-color: #3c687a;
         }
         a:link {
-        color: rgb(221, 209, 209);
-        background-color: transparent;
-        text-decoration: none;
+            /* color: rgb(255, 255, 255); */
+            color: var(--text-color);
+            background-color: transparent;
+            text-decoration: none;
         }
         .no-files {
             text-align: center;
             padding: 20px;
             color: #e74c3c;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 80px;
+            right: 10px;
+            background-color: var(--button-background-color);
+            /* color: white; */
+            color: var(--text-color);
+            border: none;
+            padding: 8px 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--button-hover-color);
         }
 
         /* Modal styles */
@@ -184,7 +269,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            /* background-color: rgba(0, 0, 0, 0.8); */
+            background-color: var(--background-color);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -204,19 +290,28 @@
             font-size: 30px;
             cursor: pointer;
         }
+        #error-message {
+            display: none;
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
     </style>    
 </head>
 <body>
+    <div class="background"></div>
     <div class="container">
         <div class="header-content">
+            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <form class="form-container" action="/" method="post" onsubmit="search(event)">
-                <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                <input type="text" id="search-input" name="input_string" placeholder="Enter keyword to Search">
                 <input type="image" src="/searchlogo1.png" alt="submit">
             </form>
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
-                <a href="/telegram">Hactivist_Terrorism</a>
+                <a href="/hactivism">Hactivist_Terrorism</a>
                 <a href="/ransomware">RansomWare</a>
                 <a href="/phishing">Phishing</a>
             </div>
@@ -237,6 +332,7 @@
         <span id="close-modal">&times;</span>
         <img id="modal-image" src="" alt="File Image">
     </div>
+
 
     <script>
         // Function to load folder structure and display folder names horizontally
@@ -261,6 +357,16 @@
 
         // Function to display files in a table when a folder is clicked
         async function showFiles(folderName) {
+            // Remove 'active-folder' class from all folders
+            const folders = document.querySelectorAll('.folder');
+            folders.forEach(folder => folder.classList.remove('active-folder'));
+
+            // Add 'active-folder' class to the clicked folder
+            const clickedFolder = [...folders].find(folder => folder.textContent === folderName);
+            if (clickedFolder) {
+                clickedFolder.classList.add('active-folder');
+            }
+
             try {
                 const response = await fetch(`/files/${folderName}`);
                 const files = await response.json();
@@ -323,6 +429,67 @@
                 document.getElementById('file-list').innerHTML = `<p>Error fetching files: ${error.message}</p>`;
             }
         }
+        // Function to handle search
+        async function search(event) {
+            event.preventDefault(); // Prevent form submission
+            const keyword = document.getElementById('search-input').value;  // Correctly fetching the input value
+
+            try {
+                const response = await fetch(`/search?keyword=${encodeURIComponent(keyword)}`);
+                const files = await response.json();
+
+                if (Array.isArray(files) && files.length > 0) {
+                    let tableRows = '';
+                    files.forEach(file => {
+                        const fileNameWithDetails = file.split('/').pop();
+                        const underscoreIndex = fileNameWithDetails.lastIndexOf('_');
+
+                        if (underscoreIndex !== -1) {
+                            const discoveredDateWithType = fileNameWithDetails.substring(underscoreIndex + 1);
+                            const fileName = fileNameWithDetails.substring(0, underscoreIndex);
+                            
+                            const discoveredDate = discoveredDateWithType.split('.')[0];
+                            const fileType = discoveredDateWithType.split('.').pop().toUpperCase();
+
+                            const icon = fileType === 'PNG' ? 'fa-file-image' : (fileType === 'CSV' ? 'fa-file-csv' : 'fa-file');
+                            tableRows += `
+                            <tr>
+                                <td><i class="fas ${icon}"></i><a href="${isImageFile(fileType) ? 'javascript:void(0);' : `/fetch/${encodeURIComponent(file)}`}" ${isImageFile(fileType) ? `onclick="openModal('/fetch/${encodeURIComponent(file)}')"` : ''}>${fileName}</a></td>
+                                <td>${formatDate(discoveredDate)}</td>
+                                <td>${fileType}</td>
+                            </tr>`;
+                        } else {
+                            const fileType = fileNameWithDetails.split('.').pop().toUpperCase();
+                            tableRows += `
+                            <tr>
+                                <td><i class="fas fa-file"></i><a href="/fetch/${encodeURIComponent(file)}">${fileNameWithDetails}</a></td>
+                                <td>N/A</td>
+                                <td>${fileType}</td>
+                            </tr>`;
+                        }
+                    });
+
+                    document.getElementById('file-list').innerHTML = `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Discovered Date</th>
+                                    <th>File Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>`;
+                } else {
+                    document.getElementById('file-list').innerHTML = `<p class="no-files">No files found for "${keyword}".</p>`;
+                }
+            } catch (error) {
+                document.getElementById('file-list').innerHTML = `<p>Error performing search: ${error.message}</p>`;
+            }
+        }
+
 
         // Helper functions to open and close the image modal
         function openModal(imageSrc) {
@@ -354,6 +521,38 @@
             }
             return dateString; // Return as-is if not in expected format
         }
+        // Active link detection
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+        // Function to toggle between dark mode and light mode
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('light-mode');
+
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            if (body.classList.contains('light-mode')) {
+                themeToggleBtn.innerText = 'Dark Mode';
+            } else {
+                themeToggleBtn.innerText = 'Light Mode';
+            }
+        }
+
+        // // Form validation to check if the search input is empty
+        // function validateForm(event) {
+        //     const input = document.querySelector('input[name="input_string"]').value.trim();
+        //     const errorMessage = document.getElementById('error-message');
+        //     if (input === '') {
+        //         event.preventDefault();
+        //         errorMessage.style.display = 'block';
+        //     } else {
+        //         errorMessage.style.display = 'none';
+        //     }
+        // }
 
         // Load folder structure on page load
         window.onload = loadFolderStructure;

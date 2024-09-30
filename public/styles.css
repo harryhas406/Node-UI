@@ -1,0 +1,210 @@
+/* For Chrome, Safari, and Edge */
+::-webkit-scrollbar {
+    width: 4px; /* Set the width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #1e1e1e;  /* Track background */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scroll handle (thumb) */
+    border-radius: 10px; /* Make the scroll handle rounded */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color when hovering over the scroll handle */
+}
+body {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    --background-color: #1e1e1e;
+    --text-color: #fff;
+    --line-color: #fff;
+    --button-background-color: #1669D3;
+    --button-hover-color: #1669D3;
+    --table-header-bg: #2C3E50;
+    --table-row-bg: rgba(255, 255, 255, 0.1);
+    --table-row-hover-bg: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
+    scrollbar-color: #888 #1e1e1e;
+}
+
+header {
+    background-color: #313840;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    padding: 5.7px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    width: 35px;
+}
+.line {
+    position: absolute; /* Allows it to stay independent of the flex alignment */
+    top: 40px; /* Adjust to place it right under the header */
+    height: 2px;
+    background-color: #6248c0;
+}
+
+.sidebar {
+    background-color: #313840;
+    color: #fff;
+    width: 180px; /* Width when expanded */
+    position: fixed;
+    top: 50px; /* Below header */
+    bottom: 0;
+    overflow: hidden;
+    /* overflow-y: auto; Scrollable vertically */
+    padding: 5px;
+    transition: width 0.3s; /* Add a smooth transition for width */
+    white-space: nowrap; /* Prevent text from wrapping */
+    /* overflow-x: hidden; Hide any horizontal overflow */
+}
+
+.sidebar.collapsed {
+    width: 50px; /* Width when collapsed */
+    overflow-x: hidden; /* Ensure no horizontal scroll in collapsed state */
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    transition: all 0.3s; /* Smooth transition for link opacity */
+}
+.sidebar a i {
+    font-size: 20px;
+    margin-right: 10px;
+}
+.sidebar.collapsed a i {
+    margin-right: 0; /* No margin in collapsed mode */
+}
+.sidebar a .text {
+    display: inline-block;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed a:hover {
+    opacity: 0; /* Prevent hover effect when collapsed */
+}
+.sidebar.collapsed a .text {
+    opacity: 0; /* Hide text in collapsed mode */
+    width: 0; /* Collapse the text */
+    margin-left: 0; /* Remove margin */
+}
+.sidebar a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap; /* Allow the items to wrap into multiple rows */
+    justify-content: space-between;
+    margin-left: 200px; /* Space for sidebar */
+    margin-top: 50px; /* Space for header */
+    padding: 20px;
+    gap: 20px;
+    overflow-y: auto; /* Makes the content scrollable */
+    height: calc(100vh - 60px); /* Full height minus header */
+    transition: margin-left 0.3s; /* Smooth transition for content */
+}
+.content.collapsed {
+    margin-left: 60px; /* Adjust for collapsed sidebar */
+}
+
+.column {
+    width: 47.66%; /* Full width for the main column */
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    height: auto; /* Height adjusts based on content */
+    background-color: #313840; /* Add background color */
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Align items vertically */
+    transition: margin-left 0.3s; /* Smooth transition for column too */
+}
+
+.full-column {
+    flex-direction: column; /* Stack the links and chart vertically */
+}
+
+.links-chart-wrapper {
+    display: flex; /* Enable flexbox for links and chart */
+    justify-content: space-between; /* Space between links and chart */
+    align-items: flex-start; /* Align items to the top */
+    width: 100%; /* Full width for the wrapper */
+}
+
+.links-column {
+    width: 20%; /* Adjust width for links */
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    background-color: #313840; /* Dark background */
+    height: 400px; /* Fixed height for links column */
+    overflow-y: auto; /* Enable vertical scroll for folder links */
+}
+
+.chart-column {
+    width: 75%; /* Adjust width for chart */
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    background-color: #313840; /* Dark background */
+    height: 400px; /* Fixed height for chart column */
+}
+
+h5 {
+    color: #ffcc00; /* Title color */
+    text-align: center; /* Center the title */
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+a {
+    color: #689fc4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+.toggle-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute;
+    bottom: 10px; /* Position at the bottom of the sidebar */
+    left: 10px;
+    z-index: 1001; /* Above sidebar */
+}
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0; /* No margin for smaller screens */
+        flex-direction: column; /* Stack columns vertically */
+    }
+    
+    .links-column, .chart-column {
+        width: 100%; /* Full width for smaller screens */
+    }
+}

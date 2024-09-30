@@ -60,52 +60,75 @@ app.get('/phishing', (req, res) => {
         <title>CDOT Phishing Assessment</title>
         <link rel="stylesheet" href="/phishingStyle.css">
         <script>
-                    function toggleTheme() {
-                        const body = document.body;
-                        const isDarkMode = body.classList.toggle('dark-mode');
-                        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-                        updateButtonText(isDarkMode);
+            // Function to toggle between dark mode and light mode
+            function toggleTheme() {
+                const body = document.body;
+                body.classList.toggle('light-mode');
+
+                const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                if (body.classList.contains('light-mode')) {
+                    themeToggleBtn.innerText = 'Dark Mode';
+                } else {
+                    themeToggleBtn.innerText = 'Light Mode';
+                }
+            }
+            // Function to highlight active link
+            function highlightActiveLink() {
+                const currentPath = window.location.pathname;
+                const links = document.querySelectorAll('.nav-links a');
+                links.forEach(link => {
+                    // Remove 'active' class from all links
+                    link.classList.remove('active');
+                    // Add 'active' class to the current page's link
+                    if (link.getAttribute('href') === currentPath) {
+                        link.classList.add('active');
                     }
+                });
+            }    
 
-                    function updateButtonText(isDarkMode) {
-                        const toggleButton = document.getElementById('theme-toggle-btn');
-                        toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-                    }
+            window.onload = function() {
+                // Highlight the active link
+                highlightActiveLink();
+            };
 
-                    window.onload = function() {
-                        const savedTheme = localStorage.getItem('theme');
-                        if (savedTheme === 'dark') {
-                            document.body.classList.add('dark-mode');
-                        }
-                        updateButtonText(savedTheme === 'dark');
-                    };
-
-                    function validateForm(event) {
-                        const input = document.querySelector('input[name="input_string"]');
-                        const errorMessage = document.getElementById('error-message');
+            // Form validation
+            function validateForm(event) {
+                const input = document.querySelector('input[name="input_string"]');
+                const errorMessage = document.getElementById('error-message');
                         
-                        if (input.value.trim() === "") {
-                            event.preventDefault();
-                            errorMessage.style.display = 'block';
-                        } else {
-                            errorMessage.style.display = 'none';
-                        }
-                    }
-                </script>
+                if (input.value.trim() === "") {
+                    event.preventDefault();
+                    errorMessage.style.display = 'block';
+                } else {
+                    errorMessage.style.display = 'none';
+                }
+            }
+        </script>
     </head>
     <body>
         <div class="background"></div>
         <div class="container">
-            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
-            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
-            <img class="head-image" src="/suspicious.png" alt="Logo">
-            <h1 class="head-text">Comprehensive Phishing Assessment</h1>
+            <div class="header-content">
+                <!-- Search Form to search data from the CSV -->
+                <form class="small-search-form" action="/searchCSV" method="GET" style="display: inline;">
+                    <input type="text" name="query" placeholder="Search in CSV..." style="width: 150px; height: 30px;">
+                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 40px; height: auto;vertical-align: bottom;">
+                </form>
+                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+                    <input type="text" name="input_string" placeholder="Enter Domain here">
+                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                    <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+                </form>
+                <div class="nav-links">
+                    <a href="/drkweb">DarkWeb</a>
+                    <a href="/telegram">Hactivist_Terrorism</a>
+                    <a href="/ransomware">RansomWare</a>
+                    <a href="/phishing">Phishing</a>
+                </div>
+            </div>
             <div class="line"></div>
-            <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                <input type="text" name="input_string" placeholder="Enter Domain here">
-                <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
-                <div id="error-message" class="error-message">*Please Enter a valid domain</div>
-            </form>
         </div>
     </body>
     </html>
@@ -138,6 +161,27 @@ app.post('/submit', (req, res) => {
                 <title>No Record Found</title>
                 <link rel="stylesheet" href="/phishingStyle.css">
                 <script>
+                    // Function to toggle between dark mode and light mode
+                    function toggleTheme() {
+                        const body = document.body;
+                        body.classList.toggle('light-mode');
+
+                        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                        if (body.classList.contains('light-mode')) {
+                            themeToggleBtn.innerText = 'Dark Mode';
+                        } else {
+                            themeToggleBtn.innerText = 'Light Mode';
+                        }
+                    }
+                    // Active link detection
+                    const currentPath = window.location.pathname;
+                    const links = document.querySelectorAll('.nav-links a');
+                    links.forEach(link => {
+                        if (link.getAttribute('href') === currentPath) {
+                            link.classList.add('active');
+                        }
+                    });
+
                     function validateForm(event) {
                         const input = document.querySelector('input[name="input_string"]');
                         const errorMessage = document.getElementById('error-message');
@@ -152,24 +196,23 @@ app.post('/submit', (req, res) => {
                 </script>
 
                 <script>
-                    function toggleTheme() {
-                        const body = document.body;
-                        const isDarkMode = body.classList.toggle('dark-mode');
-                        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-                        updateButtonText(isDarkMode);
-                    }
-
-                    function updateButtonText(isDarkMode) {
-                        const toggleButton = document.getElementById('theme-toggle-btn');
-                        toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-                    }
+                    // Function to highlight active link
+                    function highlightActiveLink() {
+                        const currentPath = window.location.pathname;
+                        const links = document.querySelectorAll('.nav-links a');
+                        links.forEach(link => {
+                            // Remove 'active' class from all links
+                            link.classList.remove('active');
+                            // Add 'active' class to the current page's link
+                            if (link.getAttribute('href') === currentPath) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }    
 
                     window.onload = function() {
-                        const savedTheme = localStorage.getItem('theme');
-                        if (savedTheme === 'dark') {
-                            document.body.classList.add('dark-mode');
-                        }
-                        updateButtonText(savedTheme === 'dark');
+                        // Highlight the active link
+                        highlightActiveLink();
                     };
 
                     function validateForm(event) {
@@ -188,16 +231,22 @@ app.post('/submit', (req, res) => {
             <body>
                 <div class="background"></div>
                 <div class="container">
-                    <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
-                    <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
-                    <img class="head-image" src="/suspicious.png" alt="Suspicious">
-                    <h1 class="head-text">Comprehensive Phishing Assessment</h1>
+                    <div class="header-content">
+                        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                        <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                        <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+                            <input type="text" name="input_string" placeholder="Enter Domain here">
+                            <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                            <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+                        </form>
+                        <div class="nav-links">
+                            <a href="/drkweb">DarkWeb</a>
+                            <a href="/telegram">Hactivist_Terrorism</a>
+                            <a href="/ransomware">RansomWare</a>
+                            <a href="/phishing">Phishing</a>
+                        </div>              
+                    </div>
                     <div class="line"></div>
-                    <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                        <input type="text" name="input_string" placeholder="Enter Domain here">
-                        <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
-                        <div id="error-message" class="error-message">*Please Enter a valid domain</div>
-                    </form>
                     <h2 class="results-heading">No Record Found for: ${inputString}</h2>
                 </div>
             </body>
@@ -236,6 +285,18 @@ app.post('/submit', (req, res) => {
                         <title>Phishing Assessment Result</title>
                         <link rel="stylesheet" href="/phishingStyle.css">
                         <script>
+                            // Function to toggle between dark mode and light mode
+                            function toggleTheme() {
+                                const body = document.body;
+                                body.classList.toggle('light-mode');
+
+                                const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                                if (body.classList.contains('light-mode')) {
+                                    themeToggleBtn.innerText = 'Dark Mode';
+                                } else {
+                                    themeToggleBtn.innerText = 'Light Mode';
+                                }
+                            }
                             function validateForm(event) {
                                 const input = document.querySelector('input[name="input_string"]');
                                 const errorMessage = document.getElementById('error-message');
@@ -250,24 +311,22 @@ app.post('/submit', (req, res) => {
                         </script>
 
                         <script>
-                            function toggleTheme() {
-                                const body = document.body;
-                                const isDarkMode = body.classList.toggle('dark-mode');
-                                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-                                updateButtonText(isDarkMode);
-                            }
-
-                            function updateButtonText(isDarkMode) {
-                                const toggleButton = document.getElementById('theme-toggle-btn');
-                                toggleButton.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
-                            }
-
+                            // Function to highlight active link
+                            function highlightActiveLink() {
+                                const currentPath = window.location.pathname;
+                                const links = document.querySelectorAll('.nav-links a');
+                                links.forEach(link => {
+                                    // Remove 'active' class from all links
+                                    link.classList.remove('active');
+                                    // Add 'active' class to the current page's link
+                                    if (link.getAttribute('href') === currentPath) {
+                                        link.classList.add('active');
+                                    }
+                                });
+                            }    
                             window.onload = function() {
-                                const savedTheme = localStorage.getItem('theme');
-                                if (savedTheme === 'dark') {
-                                    document.body.classList.add('dark-mode');
-                                }
-                                updateButtonText(savedTheme === 'dark');
+                                // Highlight the active link
+                                highlightActiveLink();
                             };
 
                             function validateForm(event) {
@@ -286,16 +345,22 @@ app.post('/submit', (req, res) => {
                     <body>
                         <div class="background"></div>
                         <div class="container">
-                            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Switch to Dark Mode</button>
-                            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
-                            <img class="head-image" src="/suspicious.png" alt="Suspicious">
-                            <h1 class="head-text">Comprehensive Phishing Assessment</h1>
+                            <div class="header-content">
+                                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                                <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                                <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
+                                    <input type="text" name="input_string" placeholder="Enter Domain here" value="${inputString}">
+                                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                                    <div id="error-message" class="error-message">*Please Enter a valid domain</div>
+                                </form>
+                                <div class="nav-links">
+                                    <a href="/drkweb">DarkWeb</a>
+                                    <a href="/telegram">Hactivist_Terrorism</a>
+                                    <a href="/ransomware">RansomWare</a>
+                                    <a href="/phishing">Phishing</a>
+                                </div>
+                            </div>
                             <div class="line"></div>
-                            <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                                <input type="text" name="input_string" placeholder="Enter Domain here" value="${inputString}">
-                                <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 60px; height: auto;vertical-align: bottom;">
-                                <div id="error-message" class="error-message">*Please Enter a valid domain</div>
-                            </form>
                             <h2 class="results-heading">Results for: ${inputString}</h2>
                             <div class="table-container">
                                 ${tableHtml}
@@ -306,6 +371,43 @@ app.post('/submit', (req, res) => {
                 `);
             });
     });
+});
+app.get('/searchCSV', (req, res) => {
+    const query = req.query.query.toLowerCase();
+    const results = [];
+
+    // Path to the CSV file on your local system
+    const csvFilePath = path.join(__dirname, 'tsocData', 'data.csv');
+
+    // Read and search the CSV
+    fs.createReadStream(csvFilePath)
+        .pipe(csv())
+        .on('data', (row) => {
+            // Check if the query exists in any of the row fields
+            if (Object.values(row).some(value => value.toLowerCase().includes(query))) {
+                results.push(row); // Add matching row to results
+            }
+        })
+        .on('end', () => {
+            if (results.length > 0) {
+                res.send(`
+                    <h1>Search Results</h1>
+                    <ul>
+                        ${results.map(result => `<li>${JSON.stringify(result)}</li>`).join('')}
+                    </ul>
+                    <a href="/phishing">Back to Phishing Page</a>
+                `);
+            } else {
+                res.send(`
+                    <h1>No results found for "${query}"</h1>
+                    <a href="/phishing">Back to Phishing Page</a>
+                `);
+            }
+        })
+        .on('error', (err) => {
+            console.error(err);
+            res.status(500).send('Error reading CSV file.');
+        });
 });
 
 // Endpoint to fetch messages
@@ -344,6 +446,24 @@ app.get('/api/messages', async (req, res) => {
 // Default route to serve the telegram.html page
 app.get('/telegram', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'telegram.html'));
+});
+// Route to read the CSV file and filter by Is-India-related for telegram
+app.get('/api/data', (req, res) => {
+    const results = [];
+    fs.createReadStream('teleg_final.csv') // Adjust to your CSV file path
+        .pipe(csv())
+        .on('data', (data) => {
+            // Check if Is-India-related is true (case-insensitive)
+            if (data['Is-India-related'] && data['Is-India-related'].toLowerCase() === 'true') {
+                results.push(data);
+            }
+        })
+        .on('end', () => {
+            res.json(results);
+        });
+});
+app.get('/hactivism', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'hactivism.html'));
 });
 
 const minioClient = new Minio.Client({
@@ -433,6 +553,29 @@ app.get('/fetch/*', (req, res) => {
 // Route to serve static HTML page for Darkweb browser
 app.get('/drkweb', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'darkweb.html'));
+});
+// Search feature for darkweb
+app.get('/search', (req, res) => {
+    const keyword = req.query.keyword.toLowerCase();  // Get the keyword from query parameters
+    const bucketName = 'darkwebleaks';  // Your bucket name
+    let matchingFiles = [];
+
+    const stream = minioClient.listObjectsV2(bucketName, '', true);
+
+    stream.on('data', (obj) => {
+        if (!obj.prefix && obj.name.toLowerCase().includes(keyword)) {
+            matchingFiles.push(obj.name);  // Collect matching file names
+        }
+    });
+
+    stream.on('end', () => {
+        res.json(matchingFiles);  // Send the matching files as JSON
+    });
+
+    stream.on('error', (err) => {
+        console.error('Error listing objects:', err);
+        res.status(500).json({ error: 'Error listing objects' });
+    });
 });
 
 // Route to serve the ransomware data page
@@ -759,6 +902,115 @@ app.get('/get_phishing_data', (req, res) => {
 //         });
 //     });
 // });
+
+// Unified Search on the home page from different data sources
+app.get('/unified-search', async (req, res) => {
+    const query = req.query.query.toLowerCase();
+    
+    // Initialize results object for each source
+    const results = {
+        elasticResults: [],
+        csvResults: [],
+        jsonResults: [],
+        minioResults: []
+    };
+
+    // 1. Search Elasticsearch
+    try {
+        const elasticResults = await client.search({
+            index: 'telegram_messages',
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            multi_match: {
+                                query: query,
+                                fields: ['message', 'categories', 'threat_actor']
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        results.elasticResults = elasticResults.hits.hits.map(hit => ({
+            source: 'Elasticsearch',
+            data: hit._source
+        }));
+    } catch (err) {
+        console.error('Error fetching Elasticsearch results:', err);
+    }
+
+    // 2. Search CSV (data.csv)
+    const csvFilePath = path.join(__dirname, 'tsocData', 'data.csv');
+    try {
+        await new Promise((resolve, reject) => {
+            const csvResults = [];
+            fs.createReadStream(csvFilePath)
+                .pipe(csv())
+                .on('data', (row) => {
+                    if (Object.values(row).some(value => value.toLowerCase().includes(query))) {
+                        csvResults.push({ source: 'CSV', data: row });
+                    }
+                })
+                .on('end', () => {
+                    results.csvResults = csvResults;
+                    resolve();
+                })
+                .on('error', (err) => {
+                    reject(err);
+                });
+        });
+    } catch (err) {
+        console.error('Error reading CSV file:', err);
+    }
+
+    // 3. Search posts.json
+    try {
+        const postsFilePath = path.join(__dirname, 'posts.json');
+        const postsData = JSON.parse(fs.readFileSync(postsFilePath, 'utf8'));
+
+        const postMatches = postsData.filter(post => {
+            const postTitle = post.post_title?.toLowerCase() || '';
+            const groupName = post.group_name?.toLowerCase() || '';
+            const discovered = post.discovered?.toLowerCase() || '';
+            return postTitle.includes(query) || groupName.includes(query) || discovered.includes(query);
+        });
+
+        results.jsonResults = postMatches.map(post => ({
+            source: 'JSON',
+            data: post
+        }));
+    } catch (jsonError) {
+        console.error("Error reading or parsing posts.json:", jsonError);
+    }
+
+    // 4. Search MinIO
+    try {
+        const bucketName = 'darkwebleaks';
+        const stream = minioClient.listObjectsV2(bucketName, '', true);
+        const minioResults = [];
+
+        stream.on('data', (obj) => {
+            if (obj.name.toLowerCase().includes(query)) {
+                minioResults.push({ source: 'MinIO', data: obj.name });
+            }
+        });
+
+        stream.on('end', () => {
+            results.minioResults = minioResults;
+            // Send all results as a unified response
+            res.json(results);
+        });
+
+        stream.on('error', (err) => {
+            console.error('Error searching MinIO:', err);
+            res.status(500).send('Error searching MinIO');
+        });
+    } catch (err) {
+        console.error('Error initializing MinIO search:', err);
+        res.status(500).send('Error initializing MinIO search');
+    }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;

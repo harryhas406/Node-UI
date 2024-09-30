@@ -3,192 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Title</title>
+    <title>Cdot Assessment</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
-    <style>
-        /* For Chrome, Safari, and Edge */
-        ::-webkit-scrollbar {
-            width: 4px; /* Set the width of the scrollbar */
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;  /* Track background */
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #888; /* Color of the scroll handle (thumb) */
-            border-radius: 10px; /* Make the scroll handle rounded */
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555; /* Darker color when hovering over the scroll handle */
-        }
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            --background-color: #1e1e1e;
-            --text-color: #fff;
-            --line-color: #fff;
-            --button-background-color: #1669D3;
-            --button-hover-color: #1669D3;
-            --table-header-bg: #2C3E50;
-            --table-row-bg: rgba(255, 255, 255, 0.1);
-            --table-row-hover-bg: #333;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.5s ease, color 0.5s ease;
-            scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
-            scrollbar-color: #888 #1e1e1e;
-        }
-
-        header {
-            background-color: #313840;
-            text-align: center;
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-            padding: 5px;
-        }
-        .logo {
-            width: 35px;
-            margin-right: 10px;
-        }
-        .line {
-            width: 100%;
-            height: 2px;
-            background-color: var(--line-color);
-            margin: 0;
-        }
-
-        .sidebar {
-            background-color: #313840;
-            color: #fff;
-            width: 180px;
-            position: fixed;
-            top: 50px; /* Below header */
-            bottom: 0;
-            overflow-y: auto; /* Scrollable if needed */
-            padding: 10px;
-        }
-        .sidebar.collapsed {
-            width: 50px; /* Width when collapsed */
-        }
-
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 10px;
-            text-decoration: none;
-            transition: opacity 0.3s; /* Smooth transition for link opacity */
-        }
-
-        .sidebar.collapsed a {
-            opacity: 0; /* Hide links when collapsed */
-            padding: 10px 0; /* Reduce padding */
-        }
-
-        .sidebar.collapsed a:hover {
-            opacity: 0; /* Prevent hover effect when collapsed */
-        }
-
-        .sidebar a:hover {
-            background-color: #555;
-        }
-
-        .content {
-            display: flex;
-            flex-wrap: wrap; /* Allow the items to wrap into multiple rows */
-            justify-content: space-between;
-            margin-left: 200px; /* Space for sidebar */
-            margin-top: 50px; /* Space for header */
-            padding: 20px;
-            gap: 20px;
-            overflow-y: auto; /* Makes the content scrollable */
-            height: calc(100vh - 60px); /* Full height minus header */
-            transition: margin-left 0.3s; /* Smooth transition for content */
-        }
-        .content.collapsed {
-            margin-left: 70px; /* Adjust for collapsed sidebar */
-        }
-
-        .column {
-            width: 47.97%; /* Full width for the main column */
-            padding: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            height: auto; /* Height adjusts based on content */
-            background-color: #313840; /* Add background color */
-            display: flex; /* Enable flexbox */
-            flex-direction: column; /* Align items vertically */
-        }
-
-        .full-column {
-            flex-direction: column; /* Stack the links and chart vertically */
-        }
-
-        .links-chart-wrapper {
-            display: flex; /* Enable flexbox for links and chart */
-            justify-content: space-between; /* Space between links and chart */
-            align-items: flex-start; /* Align items to the top */
-            width: 100%; /* Full width for the wrapper */
-        }
-
-        .links-column {
-            width: 20%; /* Adjust width for links */
-            padding: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            background-color: #313840; /* Dark background */
-            height: 400px; /* Fixed height for links column */
-            overflow-y: auto; /* Enable vertical scroll for folder links */
-        }
-
-        .chart-column {
-            width: 75%; /* Adjust width for chart */
-            padding: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
-            border-radius: 10px;
-            background-color: #313840; /* Dark background */
-            height: 400px; /* Fixed height for chart column */
-        }
-
-        h5 {
-            color: #ffcc00; /* Title color */
-            text-align: center; /* Center the title */
-            margin-bottom: 10px;
-            margin-top: 0;
-        }
-        a {
-            color: #689fc4;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-        .toggle-button {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            position: absolute;
-            bottom: 10px; /* Position at the bottom of the sidebar */
-            left: 10px;
-            z-index: 1001; /* Above sidebar */
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
     <script>
         function validateForm(event) {
             const input = document.querySelector('input[name="input_string"]');
@@ -403,6 +224,69 @@
             }
         }
 
+        // Function for Unified Search on Home page
+        function performSearch(event) {
+            event.preventDefault();
+            const query = document.getElementById('search-input').value;
+
+            fetch(`/unified-search?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing results
+                    document.getElementById("minio-results").innerHTML = "";
+                    document.getElementById("elastic-results").innerHTML = "";
+                    document.getElementById("csv-results").innerHTML = "";
+                    document.getElementById("json-results").innerHTML = "";
+
+                    // Update MinIO Results
+                    if (data.minioResults.length > 0) {
+                        data.minioResults.forEach(item => {
+                            const element = document.createElement("p");
+                            element.innerText = `File: ${item.data}`;
+                            document.getElementById("minio-results").appendChild(element);
+                        });
+                    } else {
+                        document.getElementById("minio-results").innerText = "No results found";
+                    }
+
+                    // Update Elasticsearch Results
+                    if (data.elasticResults.length > 0) {
+                        data.elasticResults.forEach(item => {
+                            const element = document.createElement("p");
+                            element.innerText = `Message: ${item.data.message}, Categories: ${item.data.categories}, Threat Actor: ${item.data.threat_actor}`;
+                            document.getElementById("elastic-results").appendChild(element);
+                        });
+                    } else {
+                        document.getElementById("elastic-results").innerText = "No results found";
+                    }
+
+                    // Update CSV Results
+                    if (data.csvResults.length > 0) {
+                        data.csvResults.forEach(item => {
+                            const element = document.createElement("p");
+                            element.innerText = JSON.stringify(item.data); // Modify as needed to display relevant CSV data
+                            document.getElementById("csv-results").appendChild(element);
+                        });
+                    } else {
+                        document.getElementById("csv-results").innerText = "No results found";
+                    }
+
+                    // Update JSON Results
+                    if (data.jsonResults.length > 0) {
+                        data.jsonResults.forEach(item => {
+                            const element = document.createElement("p");
+                            element.innerText = `Title: ${item.data.post_title}, Group: ${item.data.group_name}, Discovered: ${item.data.discovered}`;
+                            document.getElementById("json-results").appendChild(element);
+                        });
+                    } else {
+                        document.getElementById("json-results").innerText = "No results found";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error performing search:", error);
+                });
+        }
+
         // Combine both functions under a single window.onload event
         window.onload = async function() {
             // loadFiles();  // Load MinIO files
@@ -415,23 +299,37 @@
     </script>
 </head>
 <body>
-
     <header>
         <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+        <form id="search-form" onsubmit="performSearch(event)">
+            <input type="text" id="search-input" placeholder="Enter keyword" required>
+            <button type="submit">Search</button>
+        </form>
         <div class="line"></div>
     </header>
 
-    <div class="sidebar">
-        <h2>Navigation</h2>
-        <a href="/drkweb">DarkWeb</a>
-        <a href="/telegram">Hactivist_Terrorism</a>
-        <a href="/ransomware">RansomWare</a>
-        <a href="/phishing">Phishing</a>
-        
+    <div id="sidebar" class="sidebar">
+        <a href="/drkweb">
+            <i class="fas fa-globe"></i> <!-- DarkWeb Icon -->
+            <span class="text">DarkWeb</span>
+        </a>
+        <a href="/hactivism">
+            <i class="fas fa-user-secret"></i> <!-- Hactivist/Terrorism Icon -->
+            <span class="text">Hactivism</span>
+        </a>
+        <a href="/ransomware">
+            <i class="fas fa-lock"></i> <!-- Ransomware Icon -->
+            <span class="text">RansomWare</span>
+        </a>
+        <a href="/phishing">
+            <i class="fas fa-fish"></i> <!-- Phishing Icon -->
+            <span class="text">Phishing</span>
+        </a>
+
         <button class="toggle-button" onclick="toggleSidebar()">☰</button> <!-- Moved button here -->
     </div>
 
-    <div class="content">
+    <div id="content" class="content">
         <!-- Box 1 -->
         <div class="column full-column">
             <h5>DARKWEB FILES</h5>
@@ -473,19 +371,40 @@
         </div>
     </div>
 
+    <div id="search-results" style="display: none;">
+        <div class="result-box">
+            <h5>MinIO Results</h5>
+            <div id="minio-results"></div>
+        </div>
+    
+        <div class="result-box">
+            <h5>Elasticsearch Results</h5>
+            <div id="elastic-results"></div>
+        </div>
+    
+        <div class="result-box">
+            <h5>CSV Results</h5>
+            <div id="csv-results"></div>
+        </div>
+    
+        <div class="result-box">
+            <h5>JSON Results</h5>
+            <div id="json-results"></div>
+        </div>
+    </div>    
+
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const content = document.getElementById('content');
-    
+
             sidebar.classList.toggle('collapsed');
-            content.classList.toggle('collapsed');
-    
+            
             // Adjust the margin of the content based on the sidebar's state
             if (sidebar.classList.contains('collapsed')) {
-                content.style.marginLeft = '70px'; // Adjust for collapsed sidebar
+                content.style.marginLeft = '60px'; // Adjust for collapsed sidebar
             } else {
-                content.style.marginLeft = '220px'; // Adjust for expanded sidebar
+                content.style.marginLeft = '200px'; // Adjust for expanded sidebar
             }
         }
     </script>

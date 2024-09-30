@@ -91,6 +91,12 @@
         .nav-links a:hover {
             text-decoration: underline;
         }
+        /* Active link style */
+        .nav-links a.active {
+            font-weight: bold;
+            text-decoration: underline;
+            color: #4CAF50; /* Highlight color */
+        }
 
         .line {
             width: 100%;
@@ -215,6 +221,14 @@
                 document.getElementById('posts-table-body').innerHTML = '<tr><td colspan="4">Error loading data</td></tr>';
             }
         }
+        // Active link detection
+        const currentPath = window.location.pathname;
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
 
         // Fetch posts when the page loads
         fetchPosts();
