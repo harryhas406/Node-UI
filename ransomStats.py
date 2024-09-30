@@ -56,7 +56,7 @@ def run_data_viz(data):
         xaxis_title_font=dict(color='white'),  # X-axis title font color
         yaxis_title_font=dict(color='white'),  # Y-axis title font color
         legend_title_font=dict(color='white'),  # Legend title font color
-        font=dict(color='white')  # Font color
+        font=dict(color='white'),  # Font color
     )
 
     filename = "bar_chart_last_7_days.html"

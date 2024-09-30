@@ -52,7 +52,6 @@
                             toolTipContent: "<span style='color: #ff5733'>{name}</span>: <strong>{y}%</strong>",
                             indexLabel: "{name} - {y}",
                             indexLabelFontColor: "#fff",  // Set index label color to white
-                            innerRadius: "60%", // Set inner radius for donut effect
                             dataPoints: dataPoints
                         }],
                         // credits: {
@@ -102,9 +101,13 @@
                         backgroundColor: "transparent",  // Transparent background
                         legend: {
                             cursor: "pointer",
-                            itemclick: explodePie,
+                            // itemclick: explodePie,
                             fontColor: "#fff", // Set legend text color to white
-                            fontSize: 11
+                            fontSize: 11,
+                            itemclick: function(e) {
+                                const folderName = e.dataPoint.name;
+                                window.open(`/files-page?folderName=${encodeURIComponent(folderName)}`, '_blank');
+                            }
                         },
                         data: [{
                             type: "doughnut",
@@ -112,7 +115,11 @@
                             toolTipContent: "{name}: <strong>{y}</strong>",
                             indexLabel: "{name} - {y}",  // Folder name and file count
                             indexLabelFontColor: "#fff",  // White text for labels
-                            dataPoints: dataPoints
+                            dataPoints: dataPoints,
+                            // click: function(e) {
+                            //     const folderName = e.dataPoint.name;
+                            //     window.location.href = `/files-page?folderName=${encodeURIComponent(folderName)}`;
+                            // }
                         }],
                         credits: {
                             enabled: false  // Disable the watermark
@@ -120,11 +127,11 @@
                     });
 
                     // Display folder names as clickable links
-                    let folderLinks = '';
-                    dataPoints.forEach(folder => {
-                        folderLinks += `<li><a href="/files-page?folderName=${encodeURIComponent(folder.name)}">${folder.name}</a></li>`;
-                    });
-                    document.getElementById('folder-links').innerHTML = `<ul>${folderLinks}</ul>`;
+                    // let folderLinks = '';
+                    // dataPoints.forEach(folder => {
+                    //     folderLinks += `<li><a href="/files-page?folderName=${encodeURIComponent(folder.name)}">${folder.name}</a></li>`;
+                    // });
+                    // document.getElementById('folder-links').innerHTML = `<ul>${folderLinks}</ul>`;
                     // Render the chart
                     chart.render();
                 } else {
@@ -334,14 +341,14 @@
         <div class="column full-column">
             <h5>DARKWEB FILES</h5>
             <div class="links-chart-wrapper">
-                <div class="links-column">
+                <!-- <div class="links-column">
                     <div id="folder-links" style="text-align: left;">
-                        <!-- Folder links will be inserted here by fetchFolderCountData() -->
+                        Folder links will be inserted here by fetchFolderCountData()
                     </div>
                     <div id="file-list">
-                        <!-- Files will be displayed here when a folder is clicked -->
+                        Files will be displayed here when a folder is clicked
                     </div>
-                </div>
+                </div> -->
 
                 <div class="chart-column">
                     <div id="darkwebFolderChart" style="height: 400px; background: transparent;">

@@ -165,7 +165,7 @@ header {
 }
 
 .chart-column {
-    width: 75%; /* Adjust width for chart */
+    width: 100%; /* Adjust width for chart */
     padding: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
     border-radius: 10px;
