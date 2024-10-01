@@ -8,7 +8,7 @@ import requests
 def download_latest_data():
     print("[*] Downloading most recent RansomWatch data...")
     # Set the URL of the file to download
-    url = 'https://raw.githubusercontent.com/joshhighet/ransomwatch/main/posts.json'
+    url = 'https://data.ransomware.live/posts.json'
 
     # Send a GET request to the URL
     response = requests.get(url)

@@ -7,7 +7,7 @@
     <style>
         /* For Chrome, Safari, and Edge */
         ::-webkit-scrollbar {
-            width: 4px; /* Set the width of the scrollbar */
+            width: 6px; /* Set the width of the scrollbar */
         }
 
         /* Track */
@@ -27,7 +27,7 @@
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #2c2f33;
+            background-color: #121212;
             color: #fff;
             padding: 0;
             margin: 0;
@@ -38,6 +38,18 @@
             --line-color: #fff;
             --button-background-color: #1669D3;
             --button-hover-color: #1669D3;
+        }
+        .background {
+            position: absolute;
+            top: 6%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/background.png') no-repeat center center;
+            /*background-size: cover;*/
+            background-size: contain; /* Ensures the image fits within the viewport */
+            opacity: 0.08;  /* 10% opacity */
+            z-index: -1;
         }
         .container {
             position: relative;
@@ -137,28 +149,45 @@
             vertical-align: bottom;
         }
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 16px;
-            padding: 10px;
+            width: 85%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        table, th, td {
-            border: 1px solid #444;
-        }
+
         th, td {
-            padding: 12px;
-            text-align: left;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            word-wrap: break-word;
+            max-width: 150px;
         }
+
         th {
-            background-color: #444;
+            background-color: #4CAF50;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        tr:nth-child(even) {
-            background-color: #3a3d41;
+        tr:hover{
+            background-color: #2e3031;
+            transition: background-color 0.3s ease;
         }
+        /* Default link color for dark mode */
+        a {
+            color: #00aaff;  /* Light blue for better visibility */
+            text-decoration: none; /* Remove underline */
+        }
+
+        /* Hover effect for links */
     </style>
 </head>
 <body>
+    <div class="background"></div>
     <div class="container"></div>
         <div class="header-content">
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
@@ -180,9 +209,13 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Post Title</th>
+                <th>Discovered Date</th>
+                <th>Victim</th>
+                <th>Description</th>
+                <th>Country</th>
                 <th>Threat Actor</th>
+                <th>Sector</th>
+                <th>Post URL</th>
             </tr>
         </thead>
         <tbody id="posts-table-body">
@@ -207,12 +240,49 @@
                     row.appendChild(dateCell);
 
                     const titleCell = document.createElement('td');
-                    titleCell.textContent = post.post_title || 'N/A';
+                    if (post.website) {
+                        const link = document.createElement('a');
+                        // Ensure the URL starts with http:// or https://
+                        let websiteUrl = post.website;
+                        if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
+                            websiteUrl = 'http://' + websiteUrl;
+                        }
+                        link.href = websiteUrl;
+                        link.textContent = post.post_title || 'N/A';
+                        link.target = "_blank";  // Open link in a new tab
+                        titleCell.appendChild(link);
+                    } else {
+                        titleCell.textContent = post.post_title || 'N/A';
+                    }
                     row.appendChild(titleCell);
+
+                    const descriptionCell = document.createElement('td');
+                    descriptionCell.textContent = post.description || 'N/A';
+                    row.appendChild(descriptionCell);
+
+                    const countryCell = document.createElement('td');
+                    countryCell.textContent = post.country || 'N/A';
+                    row.appendChild(countryCell);
 
                     const actorCell = document.createElement('td');
                     actorCell.textContent = post.group_name || 'Unknown';
                     row.appendChild(actorCell);
+
+                    const activityCell = document.createElement('td');
+                    activityCell.textContent = post.activity || 'Unknown';
+                    row.appendChild(activityCell);
+
+                    const urlCell = document.createElement('td');
+                    if (post.post_url) {
+                        const link = document.createElement('a');
+                        link.href = post.post_url;
+                        link.textContent = post.post_url;  // Display the URL or custom text
+                        link.target = "_blank";  // Open link in a new tab
+                        urlCell.appendChild(link);
+                    } else {
+                        urlCell.textContent = 'N/A';  // Display 'N/A' if no URL is available
+                    }
+                    row.appendChild(urlCell);
 
                     tableBody.appendChild(row);
                 });

@@ -1,6 +1,6 @@
 /* For Chrome, Safari, and Edge */
 ::-webkit-scrollbar {
-    width: 4px; /* Set the width of the scrollbar */
+    width: 6px; /* Set the width of the scrollbar */
 }
 
 /* Track */

@@ -7,7 +7,7 @@
     <style>
         /* For Chrome, Safari, and Edge */
         ::-webkit-scrollbar {
-            width: 4px; /* Set the width of the scrollbar */
+            width: 8px; /* Set the width of the scrollbar */
         }
 
         /* Track */
@@ -59,7 +59,7 @@
         }
         .background {
             position: absolute;
-            top: 6%;
+            top: 80%;
             left: 0;
             width: 100%;
             height: 100%;
@@ -225,12 +225,12 @@
         #theme-toggle {
             margin-left: auto;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 5px 5px;
             background-color: #007bff;
             color: #ffffff;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             transition: background-color 0.3s;
         }
 
@@ -265,7 +265,12 @@
         .sentiment-negative {
             background-color: red;
         }
-
+        iframe {
+            border: 2px solid #444; /* Darker border for iframe */
+            display: block; /* Ensure it is not hidden */
+            margin-top: 5px; /* Space above the iframe */
+            margin-bottom: 10px;
+        }
 
     </style>
 </head>
@@ -288,10 +293,16 @@
         <div id="header-container">
             <button id="theme-toggle">Light Mode</button>
         </div>
-
+        <iframe 
+            src="http://localhost:5601/app/dashboards#/view/ad7c9bd0-68ec-11ef-9a62-bbd18dfe9698?embed=true&_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-15m%2Cto%3Anow))"  
+            height="600" 
+            width="100%">
+        </iframe>
         <div id="search-forms">
             <input type="text" id="channel-search" class="search-input" placeholder="Search Channel">
-            <input type="text" id="categories-search" class="search-input" placeholder="Search Categories">
+            <select id="categories-dropdown" class="search-input">
+                <option value="">Select Category</option> <!-- Default option for "all" -->
+            </select>
             <input type="text" id="text-search" class="search-input" placeholder="Search Text">
             <input type="text" id="sentiment-search" class="search-input" placeholder="Search Sentiment">        
         </div>
@@ -300,10 +311,10 @@
             <thead>
                 <tr>
                     <th>Channel</th>
-                    <th>Time (ISO)</th>
-                    <th>Sentiment</th>
-                    <th>Text</th>
                     <th>Categories</th>
+                    <th>Text</th>
+                    <th>Time (IST)</th>
+                    <th>Sentiment</th>
                     <th>View Details</th>
                 </tr>
             </thead>
@@ -324,26 +335,42 @@
             try {
                 const response = await fetch('/api/data'); // Update the URL as necessary
                 originalData = await response.json(); // Store the original data
+                populateCategoriesDropdown(originalData); // Populate the dropdown with categories
                 renderTable(originalData); // Render the initial table
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
 
+        function convertToIST(isoDateString) {
+            const date = new Date(isoDateString);
+            const offset = 5.5 * 60 * 60 * 1000; // IST offset is +5:30 from UTC
+            const istTime = new Date(date.getTime() + offset);
+
+            // Format IST date as 'DD-MM-YYYY HH:mm:ss'
+            const day = String(istTime.getDate()).padStart(2, '0');
+            const month = String(istTime.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const year = istTime.getFullYear();
+            const hours = String(istTime.getHours()).padStart(2, '0');
+            const minutes = String(istTime.getMinutes()).padStart(2, '0');
+            const seconds = String(istTime.getSeconds()).padStart(2, '0');
+
+            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+        }
         function renderTable(data) {
             const tableBody = document.querySelector('#data-table tbody');
             tableBody.innerHTML = ''; // Clear existing data
 
             data.forEach(row => {
-                const truncatedText = row.Text.length > 100 ? row.Text.slice(0,100) + '...' : row.Text // limit to 50 keywords
+                const truncatedText = row.Text.length > 50 ? row.Text.slice(0,60) + '...' : row.Text // limit to 50 keywords
                 const sentimentClass = getSentimentClass(row.sentiment); // Get the class based on sentiment
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.Channel}</td>
-                    <td>${row['Time (ISO)']}</td>
-                    <td><span class="sentiment-box ${sentimentClass}">${row.sentiment}</span></td>
-                    <td>${truncatedText}</td>
                     <td>${row.Categories}</td>
+                    <td>${truncatedText}</td>
+                    <td>${convertToIST(row['Time (ISO)'])}</td>
+                    <td><span class="sentiment-box ${sentimentClass}">${row.sentiment}</span></td>
                     <td class="view-details" onclick="showDetails(${JSON.stringify(row).replace(/"/g, '&quot;')})">View Details</td>
                 `;
                 tableBody.appendChild(tr);
@@ -361,20 +388,33 @@
             return ''; // Default class (no specific style)
         }
 
+        // Function to extract unique categories and populate the dropdown
+        function populateCategoriesDropdown(data) {
+            const categoriesDropdown = document.getElementById('categories-dropdown');
+            const uniqueCategories = [...new Set(data.map(item => item.Categories))]; // Get unique categories
+
+            uniqueCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoriesDropdown.appendChild(option);
+            });
+        }
+
         // Filter the table based on the search input
         function filterData() {
             const channelSearchTerm = document.getElementById('channel-search').value.toLowerCase();
-            const categoriesSearchTerm = document.getElementById('categories-search').value.toLowerCase();
+            const selectedCategory = document.getElementById('categories-dropdown').value.toLowerCase();
             const textSearchTerm = document.getElementById('text-search').value.toLowerCase();
             const sentimentSearchTerm = document.getElementById('sentiment-search').value.toLowerCase();
 
             const filteredData = originalData.filter(row => {
                 const channelMatch = row.Channel.toLowerCase().includes(channelSearchTerm);
-                const categoriesMatch = row.Categories.toLowerCase().includes(categoriesSearchTerm);
+                const categoriesMatch = selectedCategory === '' || row.Categories.toLowerCase() === selectedCategory;
                 const textMatch = row.Text.toLowerCase().includes(textSearchTerm);
                 const sentimentMatch = row.sentiment.toLowerCase().includes(sentimentSearchTerm);
                 return (!channelSearchTerm || channelMatch) &&
-                       (!categoriesSearchTerm || categoriesMatch) &&
+                       (!selectedCategory || categoriesMatch) &&
                        (!textSearchTerm || textMatch) &&
                        (!sentimentSearchTerm || sentimentMatch);
             });
@@ -383,7 +423,7 @@
         }
 
         document.getElementById('channel-search').addEventListener('input', filterData);
-        document.getElementById('categories-search').addEventListener('input', filterData);
+        document.getElementById('categories-dropdown').addEventListener('change', filterData);
         document.getElementById('text-search').addEventListener('input', filterData);
         document.getElementById('sentiment-search').addEventListener('input', filterData);
 
