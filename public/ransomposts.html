@@ -25,20 +25,41 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555; /* Darker color when hovering over the scroll handle */
         }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #fff;
-            padding: 0;
-            margin: 0;
-            scrollbar-width: thin; /* Makes the scrollbar thinner for firefox only */
-            scrollbar-color: #888 #1e1e1e; /* thumb color and track color for firefox ony */
+
+        /* Define default colors for dark mode */
+        :root {
             --background-color: #1e1e1e;
             --text-color: #fff;
-            --line-color: #fff;
+            --line-color: #fff; /* Change line color in light mode */
             --button-background-color: #1669D3;
             --button-hover-color: #1669D3;
+            --table-header-bg: #2C3E50;
+            --table-row-bg: rgba(255, 255, 255, 0.1);
+            --table-row-hover-bg: #333;
         }
+        /* Light mode styles */
+        body.light-mode {
+            --background-color: #f5f5f5;
+            --text-color: #000;
+            --line-color: #1F618D;
+            --button-background-color: #1669D3;
+            --button-hover-color: #1F618D;
+            --table-header-bg: #4CAF50;
+            --table-row-bg: rgba(199, 245, 245, 0.25);
+            --table-row-hover-bg: #ddd;
+        }
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 200vh;
+            overflow: hidden;  /* Prevent body scroll */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+        } 
+
+
         .background {
             position: absolute;
             top: 6%;
@@ -60,28 +81,31 @@
         }
 
         .header-content {
+            position: sticky; /* Make the header sticky */
+            top: 0; /* Set top position for sticky behavior */
+            background-color: var(--background-color); /* Ensure the background stays the same */
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
             padding: 5px;
-            top: 5px;
             box-sizing: border-box;
+            z-index: 10; /* Ensure it appears above other content */
+        }
+
+        .line {
+            position: sticky; /* Make the line sticky */
+            top: 40px; /* Adjust according to the header height */
+            width: 100%;
+            height: 2px;
+            background-color: #1669D3;
+            margin: 0;
         }
 
         .logo {
             width: 35px;
             margin-right: 10px;
         }
-
-        /* .heading {
-            color: #1669D3;
-            font-size: 30px;
-            font-weight: bold;
-            margin: 0;
-            word-wrap: break-word;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
-        } */
 
         .nav-links {
             display: flex;
@@ -110,29 +134,20 @@
             color: #4CAF50; /* Highlight color */
         }
 
-        .line {
-            width: 100%;
-            height: 2px;
-            background-color: var(--line-color);
-            margin: 0;
-        }
-
         /* Center the search form */
         .form-container {
-            /* flex-grow: 1;
-            display: flex;
-            justify-content: right;
-            text-align: right;
-            top: 8px;
-            width: 50%;
-            padding: 5px; */
             position: absolute;
-            top: 8px;
+            top: 2px;
             right: 10px;
-            width: 50%;
+            width: auto;
             display: flex;
+            flex-direction: column; /* Column direction to stack elements */
             justify-content: flex-end;
-            padding: 4px;
+            z-index: 20; /* Ensure it's above the background */
+        }
+        .input-group {
+            display: flex;
+            align-items: center; /* Align input and button horizontally */
         }
 
         .form-container input[type="text"] {
@@ -143,13 +158,34 @@
             box-shadow: 2px 4px 8px rgba(255,255, 255, 0.5);
         }
 
-        .form-container input[type="image"] {
-            width: 50px;
-            height: auto;
-            vertical-align: bottom;
+        .form-container input[type="submit"] {
+            padding: 4px 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color); /*Change submit button background in dark mode */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
+        .form-container input[type="submit"]:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        /* Table styling */
+        .table-container {
+            width: 99%;
+            max-height: 120vh; /* Set the height for the scrollable table */
+            overflow-y: auto; /* Add vertical scrolling */
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
         table {
-            width: 85%;
+            width: 99%;
             border-collapse: separate;
             border-spacing: 0;
             margin-left: auto;
@@ -172,29 +208,121 @@
             background-color: #4CAF50;
             font-weight: bold;
             text-transform: uppercase;
+            position: sticky;
+            top: 0; /* Keep table header sticky */
+            z-index: 2; /* Ensure it stays above the body */
         }
         tr:hover{
             background-color: #2e3031;
             transition: background-color 0.3s ease;
         }
+
+        .theme-toggle {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: var(--button-background-color);
+            /* color: white; */
+            color: var(--text-color);
+            border: none;
+            padding: 5px 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+            font-weight: bold; /* Makes the text on the button bold */
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--button-hover-color);
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 1px;
+            display: none;  /* Initially hidden */
+            z-index: 30; /* Ensure it appears above other content */
+            /* text-align: right; Align the error message to the right */
+        }
+
         /* Default link color for dark mode */
         a {
             color: #00aaff;  /* Light blue for better visibility */
             text-decoration: none; /* Remove underline */
         }
+        .sidebar {
+            position: fixed;
+            right: -100%;
+            top: 50%;
+            transform: translateY(-50%); /* Center vertically */
+            height: 80%; /* Adjust as needed for your design */
+            width: 400px;
+            background-color: #1e1e1e;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+            padding: 20px;
+            z-index: 100;
+            border-radius: 10px 0 0 10px; /* Rounded corners on left side */
+            transition: 0.5s;
+        }
 
-        /* Hover effect for links */
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            color: white;
+        }
+
+        .sidebar p {
+            word-wrap: break-word;
+        }
+
+        #post-link {
+            color: #2951a7;
+            text-decoration: none;
+            word-wrap: break-word;
+        }
+
+        #post-link:hover {
+            text-decoration: underline;
+        }
+
+        .close-btn {
+            color: white;
+            background-color: #f44336;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .close-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .details {
+            display: none;
+        }
+
     </style>
 </head>
+
 <body>
     <div class="background"></div>
     <div class="container"></div>
         <div class="header-content">
+            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <!-- <h1 class="heading">CDOT Assessment</h1> -->
             <form class="form-container" action="/api/search" method="post" onsubmit="search(event)">
-                <input type="text" name="input_string" placeholder="Enter keyword to Search">
-                <input type="image" src="/searchlogo1.png" alt="submit">
+                <div class="input-group">
+                    <input type="text" name="input_string" placeholder="Enter keyword to Search">
+                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                </div>
+                <div id="error-message" class="error-message">*Please Enter a valid domain</div>
             </form>
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
@@ -203,25 +331,38 @@
                 <a href="/phishing">Phishing</a>
             </div>
         </div>
-        <div class="line"></div>        
+        <div class="line"></div>   
     </div>
-    <h2>Ransomware Posts</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Discovered Date</th>
-                <th>Victim</th>
-                <th>Description</th>
-                <th>Country</th>
-                <th>Threat Actor</th>
-                <th>Sector</th>
-                <th>Post URL</th>
-            </tr>
-        </thead>
-        <tbody id="posts-table-body">
-            <!-- Data will be dynamically injected here -->
-        </tbody>
-    </table>
+    <div class="main-content">
+        <div class="content">
+            <h2>Ransomware Posts</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Discovered Date</th>
+                            <th>Victim</th>
+                            <th>Country</th>
+                            <th>Threat Actor</th>
+                            <th>Sector</th>
+                            <th>View Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="posts-table-body">
+                        <!-- Data will be dynamically injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar for viewing details -->
+    <div class="sidebar" id="details-sidebar">
+        <button class="close-btn" onclick="closeSidebar()">Close</button>
+        <h3>Details</h3>
+        <p id="details-description">Description: N/A</p>
+        <p id="details-url">URL: <a href="#" id="post-link" target="_blank">N/A</a></p>
+    </div>  
 
     <script>
         async function fetchPosts() {
@@ -236,29 +377,20 @@
                     const row = document.createElement('tr');
 
                     const dateCell = document.createElement('td');
-                    dateCell.textContent = new Date(post.discovered).toLocaleString();  // Convert UTC to local time format
+                    dateCell.textContent = new Date(post.discovered).toLocaleString();
                     row.appendChild(dateCell);
 
                     const titleCell = document.createElement('td');
-                    if (post.website) {
-                        const link = document.createElement('a');
-                        // Ensure the URL starts with http:// or https://
-                        let websiteUrl = post.website;
-                        if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
-                            websiteUrl = 'http://' + websiteUrl;
-                        }
-                        link.href = websiteUrl;
-                        link.textContent = post.post_title || 'N/A';
-                        link.target = "_blank";  // Open link in a new tab
-                        titleCell.appendChild(link);
-                    } else {
-                        titleCell.textContent = post.post_title || 'N/A';
+                    const link = document.createElement('a');
+                    let websiteUrl = post.website;
+                    if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
+                        websiteUrl = 'http://' + websiteUrl;
                     }
+                    link.href = websiteUrl;
+                    link.textContent = post.post_title || 'N/A';
+                    link.target = "_blank";
+                    titleCell.appendChild(link);
                     row.appendChild(titleCell);
-
-                    const descriptionCell = document.createElement('td');
-                    descriptionCell.textContent = post.description || 'N/A';
-                    row.appendChild(descriptionCell);
 
                     const countryCell = document.createElement('td');
                     countryCell.textContent = post.country || 'N/A';
@@ -268,29 +400,53 @@
                     actorCell.textContent = post.group_name || 'Unknown';
                     row.appendChild(actorCell);
 
-                    const activityCell = document.createElement('td');
-                    activityCell.textContent = post.activity || 'Unknown';
-                    row.appendChild(activityCell);
+                    const sectorCell = document.createElement('td');
+                    sectorCell.textContent = post.activity || 'Unknown';
+                    row.appendChild(sectorCell);
 
-                    const urlCell = document.createElement('td');
-                    if (post.post_url) {
-                        const link = document.createElement('a');
-                        link.href = post.post_url;
-                        link.textContent = post.post_url;  // Display the URL or custom text
-                        link.target = "_blank";  // Open link in a new tab
-                        urlCell.appendChild(link);
-                    } else {
-                        urlCell.textContent = 'N/A';  // Display 'N/A' if no URL is available
-                    }
-                    row.appendChild(urlCell);
+                    // const urlCell = document.createElement('td');
+                    // const urlLink = document.createElement('a');
+                    // urlLink.href = post.post_url;
+                    // urlLink.textContent = post.post_url || 'N/A';
+                    // urlLink.target = "_blank";
+                    // urlCell.appendChild(urlLink);
+                    // row.appendChild(urlCell);
+
+                    const detailsCell = document.createElement('td');
+                    const detailsButton = document.createElement('button');
+                    detailsButton.textContent = 'View Details';
+                    detailsButton.onclick = () => showDetails(post);  // Show details when clicked
+                    detailsCell.appendChild(detailsButton);
+                    row.appendChild(detailsCell);
 
                     tableBody.appendChild(row);
                 });
             } catch (error) {
                 console.error('Error fetching posts:', error);
-                document.getElementById('posts-table-body').innerHTML = '<tr><td colspan="4">Error loading data</td></tr>';
+                document.getElementById('posts-table-body').innerHTML = '<tr><td colspan="8">Error loading data</td></tr>';
             }
         }
+
+        function showDetails(post) {
+            document.getElementById('details-description').textContent = 'Description: ' + (post.description || 'N/A');
+            const postUrlElement = document.getElementById('post-link');
+            if (post.post_url) {
+                postUrlElement.href = post.post_url;
+                postUrlElement.textContent = post.post_url;
+            } else {
+                postUrlElement.href = '#';
+                postUrlElement.textContent = 'N/A';
+            }            
+            openSidebar();
+        }
+
+        function openSidebar() {
+            document.getElementById('details-sidebar').classList.add('open');
+        }
+
+        function closeSidebar() {
+            document.getElementById('details-sidebar').classList.remove('open');
+        }   
         // Active link detection
         const currentPath = window.location.pathname;
         const links = document.querySelectorAll('.nav-links a');
@@ -299,6 +455,18 @@
                 link.classList.add('active');
             }
         });
+        // Form validation
+        function validateForm(event) {
+            const input = document.querySelector('input[name="input_string"]');
+            const errorMessage = document.getElementById('error-message');
+                        
+            if (input.value.trim() === "") {
+                event.preventDefault();
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        }        
 
         // Fetch posts when the page loads
         fetchPosts();

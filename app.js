@@ -109,21 +109,19 @@ app.get('/phishing', (req, res) => {
         <div class="background"></div>
         <div class="container">
             <div class="header-content">
-                <!-- Search Form to search data from the CSV -->
-                <form class="small-search-form" action="/searchCSV" method="GET" style="display: inline;">
-                    <input type="text" name="query" placeholder="Search in CSV..." style="width: 150px; height: 30px;">
-                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 40px; height: auto;vertical-align: bottom;">
-                </form>
-                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                <button class="static-button" onclick="window.open('/staticCSV', '_blank')">Static</button>
+                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
                 <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
                 <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                    <input type="text" name="input_string" placeholder="Enter Domain here">
-                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                    <div class="input-group">
+                        <input type="text" name="input_string" placeholder="Enter Domain here">
+                        <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                    </div>
                     <div id="error-message" class="error-message">*Please Enter a valid domain</div>
                 </form>
                 <div class="nav-links">
                     <a href="/drkweb">DarkWeb</a>
-                    <a href="/telegram">Hactivist_Terrorism</a>
+                    <a href="/hactivism">Hactivist_Terrorism</a>
                     <a href="/ransomware">RansomWare</a>
                     <a href="/phishing">Phishing</a>
                 </div>
@@ -232,16 +230,19 @@ app.post('/submit', (req, res) => {
                 <div class="background"></div>
                 <div class="container">
                     <div class="header-content">
-                        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                        <button class="static-button" onclick="window.open('/staticCSV', '_blank')">Static</button>
+                        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
                         <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
                         <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                            <input type="text" name="input_string" placeholder="Enter Domain here">
-                            <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                            <div class="input-group">
+                                <input type="text" name="input_string" placeholder="Enter Domain here">
+                                <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                            </div>
                             <div id="error-message" class="error-message">*Please Enter a valid domain</div>
                         </form>
                         <div class="nav-links">
                             <a href="/drkweb">DarkWeb</a>
-                            <a href="/telegram">Hactivist_Terrorism</a>
+                            <a href="/hactivism">Hactivist_Terrorism</a>
                             <a href="/ransomware">RansomWare</a>
                             <a href="/phishing">Phishing</a>
                         </div>              
@@ -346,16 +347,19 @@ app.post('/submit', (req, res) => {
                         <div class="background"></div>
                         <div class="container">
                             <div class="header-content">
-                                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+                                <button class="static-button" onclick="window.open('/staticCSV', '_blank')">Static</button>
+                                <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
                                 <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
                                 <form class="form-container" action="/submit" method="post" onsubmit="validateForm(event)">
-                                    <input type="text" name="input_string" placeholder="Enter Domain here" value="${inputString}">
-                                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                                    <div class="input-group">
+                                        <input type="text" name="input_string" placeholder="Enter Domain here" value="${inputString}">
+                                        <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                                    </div>
                                     <div id="error-message" class="error-message">*Please Enter a valid domain</div>
                                 </form>
                                 <div class="nav-links">
                                     <a href="/drkweb">DarkWeb</a>
-                                    <a href="/telegram">Hactivist_Terrorism</a>
+                                    <a href="/hactivism">Hactivist_Terrorism</a>
                                     <a href="/ransomware">RansomWare</a>
                                     <a href="/phishing">Phishing</a>
                                 </div>
@@ -372,43 +376,161 @@ app.post('/submit', (req, res) => {
             });
     });
 });
-app.get('/searchCSV', (req, res) => {
-    const query = req.query.query.toLowerCase();
-    const results = [];
 
-    // Path to the CSV file on your local system
-    const csvFilePath = path.join(__dirname, 'tsocData', 'data.csv');
+//Ashish
+// // Route to serve the static CSV file in tabular form
+app.get('/staticCSV', (req, res) => {
+    const staticFilePath = path.join(__dirname, 'dynamic', 'tsoc_phishing_live_domains.csv'); // Adjust the path as needed
 
-    // Read and search the CSV
-    fs.createReadStream(csvFilePath)
+    // Check if the file exists
+    if (!fs.existsSync(staticFilePath)) {
+        return res.status(404).send('Static data file not found.');
+    }
+
+    let tableHtml = '<table id="domainTable" border="1"><tr>';
+
+    fs.createReadStream(staticFilePath)
         .pipe(csv())
+        .on('headers', (headers) => {
+            headers.forEach(header => {
+                tableHtml += `<th>${header}</th>`;
+            });
+        })
         .on('data', (row) => {
-            // Check if the query exists in any of the row fields
-            if (Object.values(row).some(value => value.toLowerCase().includes(query))) {
-                results.push(row); // Add matching row to results
-            }
+            tableHtml += '<tr>';
+            Object.keys(row).forEach(key => {
+                const value = row[key].includes(';') ? row[key].split(';').join('<br>') : row[key];
+                tableHtml += `<td>${value}</td>`;  // Insert <br> to break lines
+            });
+            tableHtml += '</tr>';
         })
         .on('end', () => {
-            if (results.length > 0) {
-                res.send(`
-                    <h1>Search Results</h1>
-                    <ul>
-                        ${results.map(result => `<li>${JSON.stringify(result)}</li>`).join('')}
-                    </ul>
-                    <a href="/phishing">Back to Phishing Page</a>
-                `);
-            } else {
-                res.send(`
-                    <h1>No results found for "${query}"</h1>
-                    <a href="/phishing">Back to Phishing Page</a>
-                `);
-            }
-        })
-        .on('error', (err) => {
-            console.error(err);
-            res.status(500).send('Error reading CSV file.');
+            tableHtml += '</table>';
+
+            // Serve the CSV content in a new HTML page
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Static Phishing Assessment Result</title>
+                    <link rel="stylesheet" href="/phishingStyle.css">
+                    <script>
+                        // Function to toggle between dark mode and light mode
+                        function toggleTheme() {
+                            const body = document.body;
+                            body.classList.toggle('light-mode');
+
+                            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                            if (body.classList.contains('light-mode')) {
+                                themeToggleBtn.innerText = 'Dark Mode';
+                            } else {
+                                themeToggleBtn.innerText = 'Light Mode';
+                            }
+                        }
+
+                        // Function to handle form submission and perform the search
+                        function handleSearch(event) {
+                            event.preventDefault(); // Prevent form from reloading the page
+                            const input = document.getElementById('search-input').value.toLowerCase(); // Get input value and convert to lowercase
+                            const table = document.getElementById('domainTable'); // The table containing the domains
+                            const tr = table.getElementsByTagName('tr'); // All table rows
+
+                            // Loop through the table rows (skipping the header row)
+                            for (let i = 1; i < tr.length; i++) {
+                                const td = tr[i].getElementsByTagName('td')[0]; // Get the first column (Domain)
+                                if (td) {
+                                    const domain = td.textContent || td.innerText; // Get domain name text
+                                    // If domain contains the search substring, display the row; otherwise, hide it
+                                    if (domain.toLowerCase().includes(input)) {
+                                        tr[i].style.display = ''; // Show the matching row
+                                    } else {
+                                        tr[i].style.display = 'none'; // Hide non-matching rows
+                                    }
+                                }
+                            }
+                        }
+
+                        window.onload = function() {
+                            const searchForm = document.getElementById('search-form'); // Form element
+                            searchForm.addEventListener('submit', handleSearch); // Bind submit event
+                        };
+                    </script>
+                </head>
+                <body>
+                    <div class="background"></div>
+                    <div class="container">
+                        <div class="header-content">
+                            <button class="static-button" onclick="window.open('/staticCSV', '_blank')">Static</button>
+                            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
+                            <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
+                            <form class="form-container" id="search-form" onsubmit="return false;">
+                                <div class="input-group">
+                                    <input type="text" id="search-input" name="input_string" placeholder="Enter Domain here">
+                                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                                </div>
+                            </form>
+                            <div class="nav-links">
+                                <a href="/drkweb">DarkWeb</a>
+                                <a href="/hactivism">Hactivist_Terrorism</a>
+                                <a href="/ransomware">RansomWare</a>
+                                <a href="/phishing">Phishing</a>
+                            </div>
+                        </div>
+                        <div class="line"></div>
+                        <div class="table-container">
+                            ${tableHtml}
+                        </div>
+                    </div>
+                </body>            
+                </html>
+            `);
         });
 });
+
+
+
+
+
+
+// app.get('/searchCSV', (req, res) => {
+//     const query = req.query.query.toLowerCase();
+//     const results = [];
+
+//     // Path to the CSV file on your local system
+//     const csvFilePath = path.join(__dirname, 'tsocData', 'data.csv');
+
+//     // Read and search the CSV
+//     fs.createReadStream(csvFilePath)
+//         .pipe(csv())
+//         .on('data', (row) => {
+//             // Check if the query exists in any of the row fields
+//             if (Object.values(row).some(value => value.toLowerCase().includes(query))) {
+//                 results.push(row); // Add matching row to results
+//             }
+//         })
+//         .on('end', () => {
+//             if (results.length > 0) {
+//                 res.send(`
+//                     <h1>Search Results</h1>
+//                     <ul>
+//                         ${results.map(result => `<li>${JSON.stringify(result)}</li>`).join('')}
+//                     </ul>
+//                     <a href="/phishing">Back to Phishing Page</a>
+//                 `);
+//             } else {
+//                 res.send(`
+//                     <h1>No results found for "${query}"</h1>
+//                     <a href="/phishing">Back to Phishing Page</a>
+//                 `);
+//             }
+//         })
+//         .on('error', (err) => {
+//             console.error(err);
+//             res.status(500).send('Error reading CSV file.');
+//         });
+// });
 
 // Endpoint to fetch messages
 app.get('/api/messages', async (req, res) => {

@@ -73,19 +73,31 @@
             justify-content: flex-start;
             padding-top: 5px;
         }
-
         .header-content {
+            position: sticky; /* Make the header sticky */
+            top: 0; /* Set top position for sticky behavior */
+            background-color: var(--background-color); /* Ensure the background stays the same */
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
             padding: 5px;
+            box-sizing: border-box;
+            z-index: 10; /* Ensure it appears above other content */
+        }
+        .line {
+            position: sticky; /* Make the line sticky */
+            top: 40px; /* Adjust according to the header height */
+            width: 100%;
+            height: 2px;
+            background-color: #1669D3;
+            margin: 0;
         }
 
         .logo {
             width: 35px;
-            margin-left: 5px;
-            margin-top: 0px;
+            margin-right: 10px;
+            /* margin-top: 0px; */
         }
 
         .nav-links {
@@ -115,35 +127,49 @@
             color: #4CAF50; /* Highlight color */
         }
 
-        .line {
+        /* .line {
             width: 100%;
             height: 2px;
             background-color: #1F618D;
             margin: 0;
-        }
+        } */
 
         .form-container {
             position: absolute;
-            top: 8px;
+            top: 2px;
             right: 10px;
-            width: 50%;
+            width: auto;
             display: flex;
+            flex-direction: column; /* Column direction to stack elements */
             justify-content: flex-end;
-            font-size: 14px; 
+            /* font-size: 14px;  */
+            z-index: 20; /* Ensure it's above the background */
         }
-
+        .input-group {
+            display: flex;
+            align-items: center; /* Align input and button horizontally */
+        }
         .form-container input[type="text"] {
             padding: 5px;
-            font-size: 14px;
+            font-size: 16px;
             width: 200px;
             border-radius: 6px;
             box-shadow: 2px 4px 8px rgba(255, 255, 255, 0.5);
+
         }
 
-        .form-container input[type="image"] {
-            width: 50px;
-            height: auto;
-            vertical-align: bottom;
+        .form-container input[type="submit"] {
+            padding: 4px 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-color);
+            background-color: var(--button-background-color); /*Change submit button background in dark mode */
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .form-container input[type="submit"]:hover {
+            background-color: var(--button-hover-color);
         }
 
         h1 {
@@ -190,10 +216,6 @@
         .folder:hover {
             background-color: #004883;
         }
-
-        /* .table-container {
-            margin-top: 20px;
-        } */
 
         .table-container {
             margin-top: 20px;
@@ -243,16 +265,17 @@
             color: #e74c3c;
         }
         .theme-toggle {
-            position: fixed;
-            top: 80px;
-            right: 10px;
+            position: absolute;
+            top: 60px;
+            right: 20px;
             background-color: var(--button-background-color);
             /* color: white; */
             color: var(--text-color);
             border: none;
-            padding: 8px 10px;
+            padding: 5px 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: bold; /* Makes the text on the button bold */
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
@@ -295,6 +318,7 @@
             color: red;
             font-size: 14px;
             margin-top: 10px;
+            z-index: 30; /* Ensure it appears above other content */
         }
 
     </style>    
@@ -306,8 +330,11 @@
             <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">Light Mode</button>
             <a href="/"><img class="logo" src="/CDOT_logo.jpg" alt="Logo"></a>
             <form class="form-container" action="/" method="post" onsubmit="search(event)">
-                <input type="text" id="search-input" name="input_string" placeholder="Enter keyword to Search">
-                <input type="image" src="/searchlogo1.png" alt="submit">
+                <div class="input-group">
+                    <input type="text" id="search-input" name="input_string" placeholder="Enter keyword to Search">
+                    <input type="image" src="/searchlogo1.png" alt="Submit" style="width: 50px; height: auto;vertical-align: bottom;">
+                </div>
+                <div id="error-message" class="error-message">*Please Enter a valid domain</div>
             </form>
             <div class="nav-links">
                 <a href="/drkweb">DarkWeb</a>
@@ -542,17 +569,17 @@
             }
         }
 
-        // // Form validation to check if the search input is empty
-        // function validateForm(event) {
-        //     const input = document.querySelector('input[name="input_string"]').value.trim();
-        //     const errorMessage = document.getElementById('error-message');
-        //     if (input === '') {
-        //         event.preventDefault();
-        //         errorMessage.style.display = 'block';
-        //     } else {
-        //         errorMessage.style.display = 'none';
-        //     }
-        // }
+        // Form validation to check if the search input is empty
+        function validateForm(event) {
+            const input = document.querySelector('input[name="input_string"]').value.trim();
+            const errorMessage = document.getElementById('error-message');
+            if (input === '') {
+                event.preventDefault();
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        }
 
         // Load folder structure on page load
         window.onload = loadFolderStructure;

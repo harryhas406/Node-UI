@@ -110,18 +110,20 @@ body {
     height: 2px;
     background-color: #1669D3;
     margin: 0;
-    z-index: 10; /* Ensure it appears above other content */
 }
 .logo {
     width: 35px;
     margin-right: 10px;
 }
+
+/*vinod sir's phishing logo */
 /*.logo {
     position: absolute;
     top: 20px;
     left: 20px;
     width: 55px; 
 } */
+
 /* .head-image {
     position: absolute;
     top: 10px;
@@ -170,27 +172,32 @@ body {
 /* Form styling */
 .form-container {
     position: absolute;
-    right: 50px;
-    top: 1px;
+    top: 2px;
     right: 10px;
-    width: 60%;
+    width: auto;
     display: flex;
+    flex-direction: column; /* Column direction to stack elements */
     justify-content: flex-end;
     z-index: 20; /* Ensure it's above the background */
 }
+.input-group {
+    display: flex;
+    align-items: center; /* Align input and button horizontally */
+}
 .form-container input[type="text"] {
     padding: 5px;
-    font-size: 16px;
+    font-size: 14px;
     width: 200px;
     border-radius: 6px;
     box-shadow: 2px 4px 8px rgba(255, 255, 255, 0.5);
+
 }
 .form-container input[type="submit"] {
     padding: 4px 5px;
     font-size: 16px;
     cursor: pointer;
     color: var(--text-color);
-    background-color: var(--button-background-color); /* Change submit button background in dark mode */
+    background-color: var(--button-background-color); /*Change submit button background in dark mode */
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
@@ -204,6 +211,8 @@ body {
     font-size: 14px;
     margin-top: 1px;
     display: none;  /* Initially hidden */
+    z-index: 30; /* Ensure it appears above other content */
+    /* text-align: right; Align the error message to the right */
 }
 /* Scrollable content below the header */
 .content-container {
@@ -212,7 +221,7 @@ body {
     padding: 20px;
 }
 .table-container {
-    /* margin-top: 180px; */ /* Adjusted margin to ensure table is positioned below the form */
+    margin-top: 40px; /* Adjusted margin to ensure table is positioned below the form */
     max-height: 120vh; /* Set the maximum height of the scrollable area */
     overflow-y: scroll;  /* Enable vertical scroll */
     width: 99%; /* Table takes 90% width */
@@ -255,7 +264,7 @@ tr:nth-child(2) {
     /*color: var(--text-color);*/ /* Ensure form text color changes */
 }
 .results-heading {
-    margin-top: 50px;
+    margin-top: 20px;
     /* margin-bottom: 8px; */
     text-align: left;  /* Align text to the left */
     width: 100%;       /* Ensure it takes the full width */
@@ -264,38 +273,64 @@ tr:nth-child(2) {
 }
 .theme-toggle {
     position: absolute;
-    top: 70px;
-    right: 220px;
+    top: 60px;
+    right: 20px;
     background-color: var(--button-background-color);
     /* color: white; */
     color: var(--text-color);
     border: none;
-    padding: 8px 10px;
+    padding: 5px 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     border-radius: 5px;
+    font-weight: bold; /* Makes the text on the button bold */
     transition: background-color 0.3s ease;
 }
 
 .theme-toggle:hover {
     background-color: var(--button-hover-color);
 }
-/* Style the small search form next to the theme toggle button */
-.small-search-form {
+/*Ashish */
+.static-button {
     position: absolute;
-    top: 70px;
-    right: 10px; /* Position it to the right of the toggle button */
+    top: 60px;
+    right: 150px;
+    padding: 5px 5px;
+    background-color: #007BFF;
+    /* color: white; */
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     display: flex;
-    align-items: center; /* Vertically align the input and button */
+    justify-content: flex-end;
+    font-size: 14px;
+    font-weight: bold; /* Makes the text on the button bold */
+    z-index: 20; /* Ensure it's above the background */
 }
 
-.small-search-form input[type="text"] {
+.static-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+/* Style the small search form next to the theme toggle button */
+/* .small-search-form {
+    position: absolute;
+    top: 70px;
+    right: 10px; Position it to the right of the toggle button
+    display: flex;
+    align-items: center; Vertically align the input and button
+} */
+
+/* .small-search-form input[type="text"] {
     height: 25px;
     padding: 2px;
     font-size: 12px;
     width: 100px;
     border-radius: 6px;
-    /* box-shadow: 2px 4px 6px rgba(255, 255, 255, 0.5); */
     border: 1px solid #ccc;
 }
 
@@ -314,4 +349,4 @@ tr:nth-child(2) {
 
 .small-search-form button:hover {
     background-color: var(--button-hover-color);
-}
+} */
