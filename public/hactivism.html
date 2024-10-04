@@ -176,11 +176,10 @@
 
         #details-sidebar {
             position: fixed;
-            top: 50%;
+            top: 0%;
             right: -100%;
             width: 500px;
-            transform: translateY(-50%); /* Center vertically */
-            height: 80%;
+            height: 100%;
             background-color: #f9f9f9;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
             padding: 20px;
@@ -303,6 +302,33 @@
             margin-top: 5px; /* Space above the iframe */
             margin-bottom: 10px;
         }
+        .close-btn {
+            color: white;
+            background-color: #f44336;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .close-btn:hover {
+            background-color: darkred;
+        }
+        .view-details-btn {
+            cursor: pointer;
+            background-color: #ecf0f5;
+            color: black;
+            border: none;
+            padding: 2px 4px;
+            border-radius: 1px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .view-details-btn:hover {
+            background-color: #c3c7cb;
+        }
 
     </style>
 </head>
@@ -355,10 +381,10 @@
     </div>
 
     <div id="details-sidebar">
-        <span id="close-sidebar">X</span>
+        <button class="close-btn" onclick="closeSidebar()">Close</button>
         <h2>Details</h2>
         <div id="details-content"></div>
-    </div>
+    </div>    
 
     <script>
         let originalData = []; // To store the original data for searching
@@ -403,7 +429,7 @@
                     <td>${truncatedText}</td>
                     <td>${convertToIST(row['Time (ISO)'])}</td>
                     <td><span class="sentiment-box ${sentimentClass}">${row.sentiment}</span></td>
-                    <td class="view-details" onclick="showDetails(${JSON.stringify(row).replace(/"/g, '&quot;')})">View Details</td>
+                    <td><button class="view-details-btn" onclick="showDetails(${JSON.stringify(row).replace(/"/g, '&quot;')})">View Details</button></td>
                 `;
                 tableBody.appendChild(tr);
             });
@@ -472,9 +498,9 @@
             document.getElementById('details-sidebar').classList.add('active');
         }
 
-        document.getElementById('close-sidebar').onclick = function() {
+        function closeSidebar() {
             document.getElementById('details-sidebar').classList.remove('active');
-        };
+        }
 
         // Active link detection
         const currentPath = window.location.pathname;
