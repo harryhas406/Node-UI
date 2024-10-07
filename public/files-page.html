@@ -141,18 +141,6 @@
         }
 
         /* Modal styles */
-        #image-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
         .modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
@@ -161,49 +149,48 @@
             top: 0;
             width: 100%; /* Full width */
             height: 100%; /* Full height */
-            overflow: hidden; /* Hide overflow */
             background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+            overflow: hidden; /* Hide overflow */
         }
 
         .modal-content {
             display: flex;
             justify-content: center;
             align-items: center;
-            max-width: 90%; /* Maximum width for the modal */
-            max-height: 90%; /* Maximum height for the modal */
-            overflow: auto; /* Enable scrolling */
-        }
-        .close {
-            position: absolute; /* Position the close button */
-            top: 20px; /* Distance from the top */
-            right: 30px; /* Distance from the right */
-            color: white; /* Color of the close button */
-            font-size: 40px; /* Size of the close button */
-            font-weight: bold; /* Weight of the font */
-            cursor: pointer; /* Cursor style */
-            z-index: 1001; /* Ensure it's above the modal */
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
 
         #modal-image {
-            max-width: 100%; /* Ensure the image doesn't overflow */
-            max-height: 100%; /* Ensure the image doesn't overflow */
-            transition: transform 0.3s ease; /* Smooth zoom effect */
+            max-width: 90%; /* Ensure the image fits within the modal width */
+            max-height: 90%; /* Ensure the image fits within the modal height */
+            transition: transform 0.3s ease, max-width 0.3s ease, max-height 0.3s ease; /* Smooth zoom effect */
             cursor: zoom-in; /* Change cursor when hovering */
+            object-fit: contain; /* Ensures the image is resized to fit without distortion */
         }
 
         #modal-image.zoomed-in {
-            transform: scale(2); /* Zoom level when clicked */
+            max-width: none; /* Remove width restriction when zoomed */
+            max-height: none; /* Remove height restriction when zoomed */
+            width: auto;
+            height: auto;
+            transform: scale(1.5); /* Zoom in to twice the size */
             cursor: zoom-out; /* Change cursor when zoomed in */
         }
 
-        #close-modal {
+        .close {
             position: absolute;
-            top: 20px;
-            right: 30px;
+            top: 20px; /* Distance from the top */
+            right: 30px; /* Distance from the right */
             color: white;
-            font-size: 30px;
+            font-size: 40px;
+            font-weight: bold;
             cursor: pointer;
+            z-index: 1001; /* Make sure it's above everything else */
         }
+
+
         .results-heading {
             margin-top: 100px;
             /* margin-bottom: 8px; */
@@ -294,21 +281,37 @@
         // Function to open the modal with the image
         // Function to open the modal with the image
         // Function to open the modal with the image
+        // Function to open the modal with the image
+        // Function to open the modal with the image
         function openModal(imageSrc) {
             const modal = document.getElementById('image-modal');
             const modalImage = document.getElementById('modal-image');
             modalImage.src = imageSrc; // Set the image source
             modal.style.display = 'flex'; // Show the modal
 
-            // Add event listener to zoom in/out when the image is clicked
-            modalImage.addEventListener('click', function() {
+            // Reset the zoom state and position when opening
+            modalImage.style.transformOrigin = 'center center';
+            modalImage.classList.remove('zoomed-in');
+
+            // Add event listener to zoom in/out based on click position
+            modalImage.addEventListener('click', function(event) {
+                const rect = modalImage.getBoundingClientRect(); // Get the image's position
+                const x = ((event.clientX - rect.left) / rect.width) * 100; // X position of click in percentage
+                const y = ((event.clientY - rect.top) / rect.height) * 100; // Y position of click in percentage
+
                 if (modalImage.classList.contains('zoomed-in')) {
-                    modalImage.classList.remove('zoomed-in'); // Zoom out
+                    // Zoom out: Reset to default
+                    modalImage.style.transformOrigin = 'center center';
+                    modalImage.classList.remove('zoomed-in');
                 } else {
-                    modalImage.classList.add('zoomed-in'); // Zoom in
+                    // Zoom in: Zoom from the click position
+                    modalImage.style.transformOrigin = `${x}% ${y}%`;
+                    modalImage.classList.add('zoomed-in');
                 }
             });
         }
+
+
 
         // Function to close the modal
         function closeModal() {
@@ -356,7 +359,7 @@
                         closeModal(); // Close if the background is clicked
                     }
                 });
-    
+                modal.addEventListener('click', closeModal);
                 closeButton.addEventListener('click', closeModal);
             }
         };
